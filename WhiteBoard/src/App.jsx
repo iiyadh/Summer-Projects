@@ -9,6 +9,9 @@ function App() {
     <div className="App">
       <ToolBar setMode={setMode}/>
       <Canvas mode={mode} />
+    <footer className="footer">
+      <p>© 2024 WhiteBoard. All rights reserved.</p>
+    </footer>
     </div>
   );
 }
