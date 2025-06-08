@@ -64,6 +64,26 @@ body {
             background: var(--toolbar-active);
             transform: translateY(1px);
         }
+        
+        &.danger-button {
+            &:hover {
+                background: var(--danger-btn);
+            }
+            
+            &:active {
+                background: var(--danger-btn-hover);
+            }
+        }
+        
+        &.save-button {
+            &:hover {
+                background: var(--primary-btn);
+            }
+            
+            &:active {
+                background: var(--primary-btn-hover);
+            }
+        }
     }
     
     .tool-divider {

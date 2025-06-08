@@ -5,10 +5,12 @@ import {
   faSlash, 
   faSquare, 
   faCircle,
-  faFont 
+  faFont,
+  faTrash,
+  faSave
 } from '@fortawesome/free-solid-svg-icons';
 
-const ToolBar = ({ setMode, color, setColor, strokeWidth, setStrokeWidth }) => {
+const ToolBar = ({ setMode, color, setColor, strokeWidth, setStrokeWidth, onClear, onSave }) => {
   return (
     <div className="toolbar">
       <button className="tool-button" title="Freehand" onClick={() => setMode("freehand")}>
@@ -34,6 +36,16 @@ const ToolBar = ({ setMode, color, setColor, strokeWidth, setStrokeWidth }) => {
       <button className="tool-button" title="Text" onClick={() => setMode("text")}>
         <FontAwesomeIcon icon={faFont} className="tool-icon" />
         <span>Text</span>
+      </button>
+      
+      <button className="tool-button danger-button" title="Clear Canvas" onClick={onClear}>
+        <FontAwesomeIcon icon={faTrash} className="tool-icon" />
+        <span>Clear</span>
+      </button>
+      
+      <button className="tool-button save-button" title="Save Drawing" onClick={onSave}>
+        <FontAwesomeIcon icon={faSave} className="tool-icon" />
+        <span>Save</span>
       </button>
       
       <div className="tool-divider"></div>

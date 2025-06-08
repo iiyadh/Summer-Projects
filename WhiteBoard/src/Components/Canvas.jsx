@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, forwardRef, useImperativeHandle } from "react";
 import "../App.scss";
 
-const Canvas = ({ mode, color, strokeWidth }) => {
+const Canvas = forwardRef(({ mode, color, strokeWidth }, ref) => {
   const canvasRef = useRef(null);
   const backgroundCanvasRef = useRef(null);
   const [isDrawing, setIsDrawing] = useState(false);
@@ -11,6 +11,12 @@ const Canvas = ({ mode, color, strokeWidth }) => {
   const [textPos, setTextPos] = useState({ x: 0, y: 0 });
   const [textFont, setTextFont] = useState("16px Arial");
   const [textColor, setTextColor] = useState(color);
+  
+  // Expose methods to parent component via ref
+  useImperativeHandle(ref, () => ({
+    clearCanvas,
+    getCanvasImage: () => canvasRef.current.toDataURL()
+  }));
 
   useEffect(() => {
     setTextColor(color);
@@ -30,6 +36,9 @@ const Canvas = ({ mode, color, strokeWidth }) => {
       // Set background canvas dimensions and position
       bgCanvas.width = rect.width;
       bgCanvas.height = rect.height;
+      
+      // Load saved canvas image after setting dimensions
+      loadCanvasFromLocalStorage();
     };
     
     resizeCanvas();
@@ -39,6 +48,35 @@ const Canvas = ({ mode, color, strokeWidth }) => {
       window.removeEventListener("resize", resizeCanvas);
     };
   }, []);
+  
+  const loadCanvasFromLocalStorage = () => {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
+    const savedCanvas = localStorage.getItem("canvasImage");
+    
+    if (savedCanvas) {
+      const img = new Image();
+      img.onload = () => {
+        ctx.drawImage(img, 0, 0);
+      };
+      img.src = savedCanvas;
+    }
+  };
+  
+  // Clear canvas function that can be called as needed
+  const clearCanvas = () => {
+    const canvas = canvasRef.current;
+    const bgCanvas = backgroundCanvasRef.current;
+    const ctx = canvas.getContext("2d");
+    const bgCtx = bgCanvas.getContext("2d");
+    
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+    
+    // Also clear from localStorage
+    localStorage.removeItem("canvasImage");
+    localStorage.removeItem("backgroundImage");
+  };
 
   const startDrawing = (e) => {
     const canvas = canvasRef.current;
@@ -163,6 +201,10 @@ const Canvas = ({ mode, color, strokeWidth }) => {
     }
 
     setIsDrawing(false);
+
+    // Save to localStorage after each drawing action
+    const dataURL = canvas.toDataURL();
+    localStorage.setItem("canvasImage", dataURL);
   };
 
   const handleFontSizeChange = (e) => {
@@ -247,6 +289,6 @@ const Canvas = ({ mode, color, strokeWidth }) => {
       )}
     </div>
   );
-};
+});
 
 export default Canvas;
