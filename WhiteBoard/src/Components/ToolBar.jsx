@@ -8,7 +8,7 @@ import {
   faFont 
 } from '@fortawesome/free-solid-svg-icons';
 
-const ToolBar = ({setMode}) => {
+const ToolBar = ({ setMode, color, setColor, strokeWidth, setStrokeWidth }) => {
   return (
     <div className="toolbar">
       <button className="tool-button" title="Freehand" onClick={() => setMode("freehand")}>
@@ -35,6 +35,35 @@ const ToolBar = ({setMode}) => {
         <FontAwesomeIcon icon={faFont} className="tool-icon" />
         <span>Text</span>
       </button>
+      
+      <div className="tool-divider"></div>
+      
+      <div className="tool-settings">
+        <div className="color-picker">
+          <label htmlFor="color-select">Color:</label>
+          <input 
+            type="color" 
+            id="color-select" 
+            value={color} 
+            onChange={(e) => setColor(e.target.value)}
+            title="Select Color"
+          />
+        </div>
+        
+        <div className="thickness-control">
+          <label htmlFor="thickness-select">Thickness:</label>
+          <input 
+            type="range" 
+            id="thickness-select" 
+            min="1" 
+            max="20" 
+            value={strokeWidth} 
+            onChange={(e) => setStrokeWidth(parseInt(e.target.value))}
+            title="Adjust Line Thickness"
+          />
+          <span className="thickness-value">{strokeWidth}px</span>
+        </div>
+      </div>
     </div>
   );
 }
