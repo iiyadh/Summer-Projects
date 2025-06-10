@@ -41,7 +41,7 @@ function App() {
         strokeWidth={strokeWidth} 
       />
       <footer className="footer">
-        <p>© 2025 WhiteBoard. All rights reserved.</p>
+        <p>© 2025 WhiteBoard All rights reserved</p>
       </footer>
     </div>
   );
