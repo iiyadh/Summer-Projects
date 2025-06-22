@@ -69,7 +69,7 @@ const login = async (req,res) => {
 }
 
 const refresh = (req, res) => {
-    const refreshToken = req.cookies.refreshToken;
+    const refreshToken = req.cookies.token;
     if (!refreshToken) return res.sendStatus(401);
 
     jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
