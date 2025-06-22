@@ -2,12 +2,19 @@ import { Link } from 'react-router-dom';
 import '../styles/Auth.css';
 import { useRef } from 'react';
 import toast from 'react-hot-toast';
+import { useLoadingStore } from '../store/loadingStore';
+import  Loader from '../effects/Loader';
 
 const Register = () => {
     const fromRef = useRef();
+    const { loading, show, hide } = useLoadingStore();
 
     const handleSubmit = async (e) =>{
         e.preventDefault();
+        show();
+        setTimeout(() => {
+            hide();
+        }, 2000);
         const formData = new FormData(fromRef.current);
         const data = {
             username: formData.get('username'),
@@ -52,21 +59,21 @@ const Register = () => {
                 <form className="auth-form" ref={fromRef} onSubmit={(e)=>handleSubmit(e)}>
                     <div className="form-group">
                         <label htmlFor="username">Username</label>
-                        <input id="username" name="username" type="text" placeholder="Choose a username" required />
+                        <input id="username" name="username" type="text" placeholder="Choose a username" disabled={loading} required />
                     </div>
                     <div className="form-group">
                         <label htmlFor="email">Email</label>
-                        <input id="email" type="email" name="email" placeholder="Enter your email" required />
+                        <input id="email" type="email" name="email" placeholder="Enter your email" disabled={loading} required />
                     </div>
                     <div className="form-group">
                         <label htmlFor="pass">Password</label>
-                        <input id="pass" type="password" name="pass" placeholder="Create a password" required />
+                        <input id="pass" type="password" name="pass" placeholder="Create a password" disabled={loading} required />
                     </div>
                     <div className="form-group">
                         <label htmlFor="Cpass">Confirm Password</label>
-                        <input id="Cpass" type="password" name="Cpass" placeholder="Confirm your password" required />
+                        <input id="Cpass" type="password" name="Cpass" placeholder="Confirm your password" disabled={loading} required />
                     </div>
-                    <button type="submit" className="auth-button">Create Account</button>
+                    <button type="submit" className="auth-button" disabled={loading}>{loading ? <Loader /> : "Create Account"}</button>
                 </form>
                 <div className="auth-link">
                     <p>Already have an account? <Link to="/login">Sign in</Link></p>

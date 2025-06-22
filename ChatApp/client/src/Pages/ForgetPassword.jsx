@@ -6,7 +6,7 @@ import { useRef } from 'react';
 const ForgetPassword = () => {
     const fromRef = useRef();
 
-    const handleSubmit = (e) =>{
+    const handleSubmit = async (e) =>{
         e.preventDefault();
         const formData = new FormData(fromRef.current);
         const email = formData.get('email');
