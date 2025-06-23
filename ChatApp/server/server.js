@@ -13,8 +13,8 @@ const server = http.createServer(app);
 const wss = new WebSocket.Server({server});
 
 app.use(cors({
-    origin:"*",
-    method:"*",
+    origin: process.env.FRONTEND_URL,
+    methods: ["*"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true
 }))
