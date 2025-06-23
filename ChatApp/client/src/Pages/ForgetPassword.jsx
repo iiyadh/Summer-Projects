@@ -3,6 +3,8 @@ import '../styles/Auth.css';
 import { useRef } from 'react';
 import { useLoadingStore } from '../store/loadingStore';
 import  Loader  from '../effects/Loader';
+import api from '../api/api';
+import toast from 'react-hot-toast';
 
 
 const ForgetPassword = () => {
@@ -11,13 +13,27 @@ const ForgetPassword = () => {
 
     const handleSubmit = async (e) =>{
         e.preventDefault();
-        show();
-        setTimeout(() => {
-            hide();
-        }, 2000);
         const formData = new FormData(fromRef.current);
         const email = formData.get('email');
-        console.log("Reset link sent to:", email);
+        
+        try{
+            show();
+            const res = await api.post('/recovery/forgot', { email });
+            if(res.status === 200){
+                hide();
+                toast.success(res.data.message, {
+                    duration: 2500,
+                    removeDelay: 500,
+                });
+                fromRef.current.reset();
+            }
+        }catch(err){
+            hide();
+            toast.error(err.response?.data?.message || "Something went wrong", {
+                duration: 2500,
+                removeDelay: 500,
+            });
+        }
     }
 
     return (

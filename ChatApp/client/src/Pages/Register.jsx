@@ -11,6 +11,7 @@ const Register = () => {
     const fromRef = useRef();
     const { loading, show, hide } = useLoadingStore();
     const { register } = useAuthStore();
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) =>{
         e.preventDefault();
@@ -46,26 +47,19 @@ const Register = () => {
             return;
         }
 
-        try{
-            show();
-            const res = await register(data);
-            console.log(res);
-            hide();
-            if(res.success) {
-                toast.success("Account created successfully", {
-                    duration: 2500,
-                    removeDelay: 500,
-                });
-                navigate('/login');
-            } else {
-                toast.error(res.error, {
-                    duration: 2500,
-                    removeDelay: 500,
-                });
-            }
-        }catch(error) {
-            hide();
-            toast.error("Something went wrong", {
+        show();
+        const result = await register(data);
+        hide();
+
+        if(result.success) {
+            toast.success(result.data.message, {
+                duration: 2500,
+                removeDelay: 500,
+            });
+            fromRef.current.reset();
+            navigate('/login');
+        }else{
+            toast.error(result.error,{
                 duration: 2500,
                 removeDelay: 500,
             });

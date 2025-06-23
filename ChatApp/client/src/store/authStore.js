@@ -4,14 +4,16 @@ import { create } from 'zustand';
 export const useAuthStore = create((set) => ({
     token: null,
 
-    register: async (data) =>{
-        try{
+    register: async (data) => {
+        try {
             const res = await api.post('/auth/register', data);
-            console.log(res);
-            set({ token: response.data.token });
-            return res;
-        }catch(err){
-            return err;
+            set({ token: res.data.token });
+            return { success: true, data: res.data };
+        } catch (err) {
+            return {
+                success: false,
+                error: err.response?.data?.message || "Something went wrong",
+            };
         }
     },
 
@@ -19,9 +21,12 @@ export const useAuthStore = create((set) => ({
         try{
             const res = await api.post('/auth/login', data);
             set({ token: res.data.token });
-            return res;
+            return { success: true, data: res.data };
         }catch(err){
-            return err;
+            return {
+                success: false,
+                error: err.response?.data?.message || "Something went wrong",
+            };
         }
     },
 
@@ -29,9 +34,12 @@ export const useAuthStore = create((set) => ({
         set({ token: null });
         try{
             const res = await api.post('/auth/logout');
-            return res;
+            return { success: true, data: res.data };
         }catch(err){
-            return err
+            return {
+                success: false,
+                error: err.response?.data?.message || "Something went wrong",
+            };
         }
     },
 }));

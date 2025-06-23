@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react';
 import toast from 'react-hot-toast';
 import { useLoadingStore } from '../store/loadingStore';
 import  Loader  from '../effects/Loader';
+import api from '../api/api';
 
 
 const ResetPassword = () => {
@@ -26,10 +27,6 @@ const ResetPassword = () => {
 
     const handleSubmit = async (e) =>{
         e.preventDefault();
-        show();
-        setTimeout(() => {
-            hide();
-        }, 2000);
         const formData = new FormData(fromRef.current);
         const newPassword = formData.get('password');
         
@@ -49,7 +46,25 @@ const ResetPassword = () => {
             return;
         }
 
-        console.log("New Password" + newPassword);
+        try{
+            show();
+            const res = await api.post(`/recovery/reset/${token}`,{ newPassword });
+            if(res.status === 200){
+                hide();
+                toast.success(res.data.message, {
+                    duration: 2500,
+                    removeDelay: 500,
+                });
+                fromRef.current.reset();
+                navigate('/login');
+            }
+        }catch(err){
+            hide();
+            toast.error(err.response?.data?.message || "Something went wrong", {
+                duration: 2500,
+                removeDelay: 500,
+            });
+        }
     }
 
     return (
