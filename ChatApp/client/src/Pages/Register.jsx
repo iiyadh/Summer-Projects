@@ -3,18 +3,17 @@ import '../styles/Auth.css';
 import { useRef } from 'react';
 import toast from 'react-hot-toast';
 import { useLoadingStore } from '../store/loadingStore';
+import { useAuthStore } from '../store/authStore';
 import  Loader from '../effects/Loader';
+import { useNavigate } from 'react-router-dom';
 
 const Register = () => {
     const fromRef = useRef();
     const { loading, show, hide } = useLoadingStore();
+    const { register } = useAuthStore();
 
     const handleSubmit = async (e) =>{
         e.preventDefault();
-        show();
-        setTimeout(() => {
-            hide();
-        }, 2000);
         const formData = new FormData(fromRef.current);
         const data = {
             username: formData.get('username'),
@@ -45,6 +44,31 @@ const Register = () => {
                 removeDelay: 500,
             });
             return;
+        }
+
+        try{
+            show();
+            const res = await register(data);
+            console.log(res);
+            hide();
+            if(res.success) {
+                toast.success("Account created successfully", {
+                    duration: 2500,
+                    removeDelay: 500,
+                });
+                navigate('/login');
+            } else {
+                toast.error(res.error, {
+                    duration: 2500,
+                    removeDelay: 500,
+                });
+            }
+        }catch(error) {
+            hide();
+            toast.error("Something went wrong", {
+                duration: 2500,
+                removeDelay: 500,
+            });
         }
     }
 
