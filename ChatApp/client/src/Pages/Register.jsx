@@ -40,7 +40,7 @@ const Register = () => {
         }
 
         if(new RegExp(/^.*(?=.{6,})(?=.*[a-zA-Z])(?=.*\d)(?=.*[!&$%&? "]).*$/).test(data.password) === false) {
-            toast.error("Week Password", {
+            toast.error("Weak Password", {
                 duration: 2500,
                 removeDelay: 500,
             });
