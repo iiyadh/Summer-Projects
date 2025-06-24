@@ -12,6 +12,9 @@ import ForgotPassword from './Pages/ForgetPassword.jsx';
 import NotFound from './Pages/NotFound.jsx';
 import Home from './Pages/Home.jsx';
 import ResetPassword from './Pages/ResetPassword.jsx';
+import Chat from './Pages/Chat.jsx';
+import ChatHome from './Components/ChatHome.jsx';
+import ChatHistory from './Components/ChatHistory.jsx';
 
 const router = createBrowserRouter([
   {
@@ -24,6 +27,14 @@ const router = createBrowserRouter([
       {path: 'forgot-password', element: <ForgotPassword />},
       {path: 'reset-password/:token', element: <ResetPassword />},
       {path: '*', element: <NotFound/>},
+      {
+        path: '/chat',
+        element: <Chat />,
+        children:[
+          {index: true, element: <ChatHome/>},
+          {path: ':chatId', element: <ChatHistory />},
+        ]
+      },
     ]
   }
 ])

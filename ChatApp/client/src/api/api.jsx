@@ -9,10 +9,21 @@ const api = axios.create({
   withCredentials: true,
 });
 
+const publicRoutes = [
+  '/auth/login',
+  '/auth/register',
+  '/recovery/forgot',
+  '/auth/logout',
+  '/auth/refresh',
+];
+
 api.interceptors.request.use(config => {
-  const accessToken = useAuthStore.getState().token;
-  if (accessToken) {
-    config.headers['Authorization'] = `Bearer ${accessToken}`;
+  const isPublic = publicRoutes.some(route => config.url.includes(route));
+  if (!isPublic) {
+    const token = useAuthStore.getState().token;
+    if (token) {
+      config.headers['Authorization'] = `Bearer ${token}`;
+    }
   }
   return config;
 });
