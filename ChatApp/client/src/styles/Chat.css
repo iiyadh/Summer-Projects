@@ -300,6 +300,8 @@
   font-size: 14px;
   line-height: 1.4;
   color: #333333;
+  max-width: 400px;
+  word-break: break-word;
 }
 
 .message.own .message-text {
