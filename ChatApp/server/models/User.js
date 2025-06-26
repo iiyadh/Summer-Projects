@@ -16,9 +16,7 @@ const userSchema = new mongoose.Schema({
     },
     profilePicture: {
         type: String,
-        default: function () {
-            return `https://www.gravatar.com/avatar/${this.username}?d=https://cdn.vectorstock.com/i/500p/44/01/default-avatar-photo-placeholder-icon-grey-vector-38594401.jpg`;
-        },
+        default: "",
     },
     bio: {
         type: String,

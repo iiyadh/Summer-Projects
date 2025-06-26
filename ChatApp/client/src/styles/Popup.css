@@ -30,7 +30,7 @@
   max-width: 90%;
   width: 400px;
   opacity: 0;
-  transform: translate(var(--spot-x, 0px), var(--spot-y, 0px)) scale(0.8);
+  transform: translate(var(--spot-x, 0px), var(--spot-y, 0px)) scale(0.6);
   transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
@@ -40,7 +40,7 @@
 }
 
 .popup-content.hide-popup {
-  transform: translate(var(--spot-x, 0px), var(--spot-y, 0px)) scale(0.8);
+  transform: translate(var(--spot-x, 0px), var(--spot-y, 0px)) scale(0.6);
   opacity: 0;
 }
 
