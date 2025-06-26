@@ -1,0 +1,377 @@
+/* General Layout */
+.settings-container{
+    display: flex;
+    flex-direction: row;
+    background-color: #F0F0F0;
+    height: 100vh;
+    width: 100%;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+/* Settings Menu Styles */
+.settings-menu {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  background-color: #EEEEEE;
+  flex:1;
+  height: 100vh;
+  padding: 20px;
+  padding-left:20vw;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.settings-menu h2 {
+  color: #000;
+  font-size: 20px;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #ccc;
+}
+
+.settings-menu ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.settings-menu ul li {
+  margin-bottom: 15px;
+}
+
+.settings-menu ul li a {
+  color: #000;
+  text-decoration: none;
+  display: block;
+  padding: 8px 5px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.settings-menu ul li a:hover {
+  background-color: rgba(3, 166, 161, 0.1);
+  color: #03A6A1;
+}
+
+.settings-menu button {
+  background-color: #FF4F0F;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  width: 100%;
+  font-weight: bold;
+  transition: background-color 0.2s;
+}
+
+.settings-menu button:hover {
+  background-color: #e0450d;
+}
+
+.settings-menu ul li a.active {
+  color: #03A6A1;
+  font-weight: bold;
+}
+
+
+
+
+/* Edit Profile Styles */
+.profile-container {
+  flex:5;
+  display: flex;
+    flex-direction: column;
+    align-items: center;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.profile-card {
+width: 900px;
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
+  margin-bottom: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.profile-header {
+  background: #f9fafb;
+  padding: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.profile-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.avatar-container {
+  position: relative;
+}
+
+.avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #03a6a1, #028a86);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid #ffffff;
+  box-shadow: 0 2px 8px rgba(3, 166, 161, 0.2);
+}
+
+.avatar-placeholder {
+  font-size: 24px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 1px;
+}
+
+.avatar-add-btn {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #03a6a1;
+  border: 2px solid #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.avatar-add-btn:hover {
+  background: #028a86;
+  transform: scale(1.05);
+}
+
+.plus-icon {
+  font-size: 16px;
+  font-weight: bold;
+  color: #ffffff;
+  line-height: 1;
+}
+
+.user-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.username-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.username {
+  font-size: 24px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+.profile-fields {
+  padding: 0;
+}
+
+.field-group {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid #f3f4f6;
+  transition: background-color 0.2s;
+}
+
+.field-group:hover {
+  background: #fafbfc;
+}
+
+.field-group:last-child {
+  border-bottom: none;
+}
+
+.field-content {
+  flex: 1;
+}
+
+.field-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 4px;
+}
+
+.field-value {
+  font-size: 16px;
+  color: #111827;
+  line-height: 1.4;
+}
+
+.field-value.placeholder {
+  color: #6b7280;
+  font-style: italic;
+}
+
+.email-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.reveal-btn {
+  background: none;
+  border: none;
+  color: #03a6a1;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: color 0.2s;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.reveal-btn:hover {
+  color: #028a86;
+  background: rgba(3, 166, 161, 0.1);
+}
+
+.eye-icon {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.field-btn {
+  background: #f9fafb;
+  border: 1px solid #d1d5db;
+  color: #374151;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 60px;
+}
+
+.field-btn:hover {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+  transform: translateY(-1px);
+}
+
+.field-btn.add-btn {
+  background: #03a6a1;
+  color: #ffffff;
+  border-color: #03a6a1;
+}
+
+.field-btn.add-btn:hover {
+  background: #028a86;
+  border-color: #028a86;
+}
+
+.password-section {
+width: 900px;
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.section-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 16px 0;
+}
+
+.change-password-btn {
+  background: #ff4f0f;
+  color: #ffffff;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 4px rgba(255, 79, 15, 0.2);
+}
+
+.change-password-btn:hover {
+  background: #e6440d;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(255, 79, 15, 0.3);
+}
+
+/* Responsive Design */
+@media (max-width: 640px) {
+  .profile-container {
+    padding: 16px;
+  }
+
+  .profile-header {
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  .profile-info {
+    width: 100%;
+  }
+
+  .edit-profile-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .field-group {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .field-btn {
+    align-self: flex-end;
+  }
+
+  .email-section {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .reveal-btn {
+    align-self: flex-start;
+  }
+}
+
+/* Focus states for accessibility */
+.edit-profile-btn:focus,
+.field-btn:focus,
+.change-password-btn:focus,
+.reveal-btn:focus,
+.avatar-add-btn:focus {
+  outline: 2px solid #03a6a1;
+  outline-offset: 2px;
+}
