@@ -3,6 +3,7 @@ import '../../styles/Popup.css';
 
 const Popup = ({ children, onClose, spot }) => {
   const [visible, setVisible] = useState(false);
+  const [hiding, setHiding] = useState(false);
   const containerRef = useRef(null);
   const popupRef = useRef(null);
 
@@ -13,17 +14,14 @@ const Popup = ({ children, onClose, spot }) => {
 
       popupRef.current.style.setProperty('--spot-x', `${dx}px`);
       popupRef.current.style.setProperty('--spot-y', `${dy}px`);
-      requestAnimationFrame(() => {
-        setVisible(true);
-      });
+
+      requestAnimationFrame(() => setVisible(true));
     }
   }, [spot]);
 
   const handleClose = () => {
-    if (popupRef.current) {
-      popupRef.current.classList.remove('show-popup');
-      popupRef.current.classList.add('hide-popup');
-    }
+    setHiding(true);
+    setVisible(false);
 
     setTimeout(() => {
       onClose();
@@ -31,10 +29,13 @@ const Popup = ({ children, onClose, spot }) => {
   };
 
   return (
-    <div ref={containerRef} className={`popup-container ${visible ? 'show' : ''}`}>
+    <div
+      ref={containerRef}
+      className={`popup-container ${visible ? 'show' : ''} ${hiding ? 'hide' : ''}`}
+    >
       <div
         ref={popupRef}
-        className={`popup-content ${visible ? 'show-popup' : ''}`}
+        className={`popup-content ${visible ? 'show-popup' : ''} ${hiding ? 'hide-popup' : ''}`}
       >
         <button className="close-button" onClick={handleClose}>
           &times;

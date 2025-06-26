@@ -1,19 +1,26 @@
 .popup-container {
   position: fixed;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0);
   display: flex;
   justify-content: center;
   align-items: center;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.3s ease;
+  transition: background-color 0.3s ease, opacity 0.3s ease;
   z-index: 999;
 }
 
 .popup-container.show {
   opacity: 1;
   pointer-events: auto;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.popup-container.hide {
+  opacity: 0;
+  pointer-events: none;
+  background-color: rgba(0, 0, 0, 0);
 }
 
 .popup-content {
