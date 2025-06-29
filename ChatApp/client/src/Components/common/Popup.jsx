@@ -22,7 +22,6 @@ const Popup = ({ children, onClose, spot }) => {
   const handleClose = () => {
     setHiding(true);
     setVisible(false);
-
     setTimeout(() => {
       onClose();
     }, 300);

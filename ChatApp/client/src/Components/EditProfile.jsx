@@ -2,9 +2,9 @@ import { useState } from 'react';
 import '../styles/Settings.css';
 import Popup from './common/Popup';
 import EditUsername from './PopupContent/EditUsername';
-// import EditEmail from './PopupContent/EditEmail';
-// import EditBio from './PopupContent/EditBio';
-// import EditPassword from './PopupContent/EditPassword';
+import EditEmail from './PopupContent/EditEmail';
+import EditBio from './PopupContent/EditBio';
+import EditPassword from './PopupContent/EditPassword';
 
 
 const EditProfile = () => {

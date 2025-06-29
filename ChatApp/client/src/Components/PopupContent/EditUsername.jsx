@@ -2,6 +2,7 @@ import Loader from "../../effects/Loader";
 import { useRef } from 'react';
 import "../../styles/Auth.css";
 import { useLoadingStore } from "../../store/loadingStore";
+import toast from 'react-hot-toast';
 
 
 
@@ -16,6 +17,15 @@ const EditUsername = () => {
             username: formData.get('username'),
             password: formData.get('pass'),
         };
+
+        if(new RegExp(/^[a-zA-Z0-9]+$/).test(data.username) === false) {
+            toast.error("Invalid Username", {
+                duration: 2500,
+                removeDelay: 500,
+            });
+            return;
+        }
+
         show();
         setTimeout(() => {
             hide();
