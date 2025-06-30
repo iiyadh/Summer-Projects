@@ -18,6 +18,8 @@ import ChatHistory from './Components/ChatHistory.jsx';
 import { Navigate } from 'react-router-dom';
 import Settings from './Pages/Settings.jsx';
 import  EditProfile  from './Components/EditProfile.jsx';
+import Apperance from './Components/Apparence.jsx';
+import Language from './Components/Language.jsx';
 
 const router = createBrowserRouter([
   {
@@ -44,8 +46,8 @@ const router = createBrowserRouter([
         children:[
           {index: true, element: <Navigate to="/settings/profile" replace />},
           {path: 'profile', element: <EditProfile />},
-          {path: 'apparence' , element: <div className='profile-container'>Apparence Settings</div>},
-          {path: 'language' , element: <div className='profile-container'>Language Settings</div>},
+          {path: 'apparence' , element: <Apperance />},
+          {path: 'language' , element: <Language />},
         ]
       }
     ]
