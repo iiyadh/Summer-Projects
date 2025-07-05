@@ -20,6 +20,7 @@ import Settings from './Pages/Settings.jsx';
 import  EditProfile  from './Components/EditProfile.jsx';
 import Apperance from './Components/Apparence.jsx';
 import Language from './Components/Language.jsx';
+import ManageFriends from './Components/ManageFriends.jsx';
 
 const router = createBrowserRouter([
   {
@@ -37,6 +38,7 @@ const router = createBrowserRouter([
         element: <Chat />,
         children:[
           {index: true, element: <ChatHome/>},
+          {path: 'friends', element: <ManageFriends />},
           {path: ':chatId', element: <ChatHistory />},
         ]
       },

@@ -1,0 +1,451 @@
+/* Friend Section Styling */
+.friends-manager {
+    width: 100%;
+    background: #ffffff;
+    color: #333333;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+    .nav-tabs {
+        display: flex;
+        align-items: center;
+        gap: 0;
+        padding: 16px 24px;
+        border-bottom: 1px solid #e1e5e9;
+        background: #ffffff;
+    }
+
+    .nav-tab {
+        background: none;
+        border: none;
+        color: #6c757d;
+        padding: 8px 16px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        transition: color 0.2s;
+    }
+
+    .nav-tab:hover {
+        color: #333333;
+    }
+
+    .nav-tab.active {
+        color: #333333;
+        font-weight: 600;
+    }
+
+    .add-friend-btn {
+        background: #03a6a1;
+        color: #ffffff;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        margin-left: auto;
+        transition: background-color 0.2s;
+    }
+
+    .add-friend-btn:hover {
+        background: #028a86;
+    }
+
+    .search-container {
+        padding: 16px 24px;
+        position: relative;
+        background: #ffffff;
+    }
+
+    .search-input {
+        width: 100%;
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 6px;
+        padding: 12px 16px 12px 40px;
+        color: #333333;
+        font-size: 14px;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .search-input::placeholder {
+        color: #6c757d;
+    }
+
+    .search-input:focus {
+        outline: none;
+        border-color: #03a6a1;
+        box-shadow: 0 0 0 3px rgba(3, 166, 161, 0.1);
+    }
+
+    .search-icon {
+        position: absolute;
+        left: 36px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6c757d;
+        width: 16px;
+        height: 16px;
+    }
+
+    /* CSS-based search icon */
+    .search-icon::before {
+        content: "";
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        border: 2px solid #6c757d;
+        border-radius: 50%;
+        top: 1px;
+        left: 1px;
+    }
+
+    .search-icon::after {
+        content: "";
+        position: absolute;
+        width: 2px;
+        height: 6px;
+        background: #6c757d;
+        transform: rotate(45deg);
+        top: 9px;
+        left: 11px;
+    }
+
+    .section-header {
+        padding: 16px 24px 8px;
+        font-size: 12px;
+        font-weight: 600;
+        color: #6c757d;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        background: #ffffff;
+    }
+
+    .friends-list {
+        padding: 0 24px;
+        background: #ffffff;
+    }
+
+    .friend-item {
+        display: flex;
+        align-items: center;
+        padding: 12px 0;
+        border-bottom: 1px solid #f1f3f4;
+        position: relative;
+        transition: background-color 0.2s;
+    }
+
+    .friend-item:hover {
+        background: #f8f9fa;
+        margin: 0 -24px;
+        padding-left: 24px;
+        padding-right: 24px;
+    }
+
+    .friend-item:last-child {
+        border-bottom: none;
+    }
+
+    .avatar-container {
+        position: relative;
+        margin-right: 12px;
+    }
+
+    .avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: #e9ecef;
+        border: 2px solid #ffffff;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .online-indicator {
+        position: absolute;
+        bottom: -2px;
+        right: -2px;
+        width: 12px;
+        height: 12px;
+        background: #03a6a1;
+        border: 2px solid #ffffff;
+        border-radius: 50%;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    }
+
+    .friend-info {
+        flex: 1;
+    }
+
+    .username {
+        font-size: 14px;
+        font-weight: 500;
+        color: #333333;
+    }
+
+    .friend-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .action-btn {
+        background: none;
+        border: none;
+        color: #6c757d;
+        cursor: pointer;
+        padding: 8px;
+        border-radius: 4px;
+        transition: all 0.2s;
+        position: relative;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .action-btn:hover {
+        color: #333333;
+        background: #f1f3f4;
+    }
+
+    /* CSS-based message icon */
+    .message-icon::before {
+        content: "";
+        position: absolute;
+        width: 14px;
+        height: 10px;
+        border: 2px solid currentColor;
+        border-radius: 3px;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    .message-icon::after {
+        content: "";
+        position: absolute;
+        width: 0;
+        height: 0;
+        border-left: 3px solid transparent;
+        border-right: 3px solid transparent;
+        border-top: 4px solid currentColor;
+        top: 60%;
+        left: 45%;
+        transform: translate(-50%, -50%);
+    }
+
+    /* CSS-based more vertical icon (three dots) */
+    .more-icon::before {
+        content: "⋮";
+        font-size: 16px;
+        font-weight: bold;
+    }
+
+    .dropdown {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background: #ffffff;
+        border: 1px solid #dee2e6;
+        border-radius: 6px;
+        padding: 4px 0;
+        min-width: 120px;
+        z-index: 10;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .dropdown-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        background: none;
+        border: none;
+        color: #333333;
+        cursor: pointer;
+        font-size: 14px;
+        width: 100%;
+        text-align: left;
+        transition: background-color 0.2s;
+    }
+
+    .dropdown-item:hover {
+        background: #f8f9fa;
+    }
+
+    .dropdown-item.danger {
+        color: #dc3545;
+    }
+
+    .dropdown-item.danger:hover {
+        background: #f8d7da;
+    }
+
+    /* CSS-based user icons */
+    .user-block-icon::before {
+        content: "🚫";
+        font-size: 14px;
+    }
+
+    .user-remove-icon::before {
+        content: "👤";
+        font-size: 14px;
+        position: relative;
+    }
+
+    .user-remove-icon::after {
+        content: "−";
+        position: absolute;
+        font-size: 12px;
+        font-weight: bold;
+        top: -2px;
+        right: -2px;
+        color: #dc3545;
+    }
+
+    .request-actions {
+        display: flex;
+        gap: 8px;
+    }
+
+    .accept-btn {
+        background: #03a6a1;
+        color: #ffffff;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 12px;
+        transition: background-color 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .accept-btn:hover {
+        background: #028a86;
+    }
+
+    .decline-btn {
+        background: #dc3545;
+        color: #ffffff;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 12px;
+        transition: background-color 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .decline-btn:hover {
+        background: #c82333;
+    }
+
+    .unblock-btn {
+        background: #03a6a1;
+        color: #ffffff;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 12px;
+        transition: background-color 0.2s;
+    }
+
+    .unblock-btn:hover {
+        background: #028a86;
+    }
+
+    .cancel-btn {
+        background: #6c757d;
+        color: #ffffff;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 12px;
+        transition: background-color 0.2s;
+    }
+
+    .cancel-btn:hover {
+        background: #5a6268;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 40px 24px;
+        color: #6c757d;
+    }
+
+    .pending-badge {
+        background: #ffc107;
+        color: #212529;
+        font-size: 10px;
+        padding: 2px 6px;
+        border-radius: 10px;
+        margin-left: 8px;
+        font-weight: 500;
+    }
+
+    .pending-badge.incoming {
+        background: #28a745;
+        color: #ffffff;
+    }
+
+    .pending-badge.outgoing {
+        background: #17a2b8;
+        color: #ffffff;
+    }
+
+    /* CSS-based check and X icons */
+    .check-icon::before {
+        content: "✓";
+        font-size: 14px;
+        font-weight: bold;
+    }
+
+    .x-icon::before {
+        content: "✕";
+        font-size: 14px;
+        font-weight: bold;
+    }
+
+    /* Responsive design */
+    @media (max-width: 768px) {
+        .nav-tabs {
+            padding: 12px 16px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .search-container {
+            padding: 12px 16px;
+        }
+
+        .section-header {
+            padding: 12px 16px 8px;
+        }
+
+        .friends-list {
+            padding: 0 16px;
+        }
+
+        .friend-item:hover {
+            margin: 0 -16px;
+            padding-left: 16px;
+            padding-right: 16px;
+        }
+
+        .username {
+            font-size: 13px;
+        }
+
+        .friend-actions {
+            gap: 4px;
+        }
+    }
+}
