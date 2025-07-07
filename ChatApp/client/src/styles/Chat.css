@@ -72,6 +72,14 @@
   font-weight: 600;
   color: #333333;
 }
+.activeheader{
+  h2{
+    color: #03a6a1;
+  }
+  svg{
+    fill: #03a6a1;
+  }
+}
 
 .chat-list {
   flex: 1;

@@ -135,7 +135,7 @@ const ManageFriends = () => {
             </div>
 
             {/* Search */}
-            <div className="search-container">
+            {activeTab !== 'add' && <div className="search-container">
                 <div className="search-icon"></div>
                 <input
                     type="text"
@@ -144,7 +144,17 @@ const ManageFriends = () => {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                 />
-            </div>
+            </div>}
+
+            {/* Send Friend Request */}
+            {activeTab === "add" && (
+                <div className="search-container">
+                    <input type="text" placeholder="Enter username" className="search-input" />
+                    <div className="list-search">
+                        
+                    </div>
+                </div>
+            )}
 
             {/* Friends Tab */}
             {activeTab === "friends" && (

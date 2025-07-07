@@ -42,7 +42,7 @@ const ChatSideBar = ({chats , activeChatId , setActiveChatId}) =>{
         className="chat-sidebar"
         style={{ width: `${width}px` }}
     >
-        <div className="sidebar-header" onClick={() => {navigate('/chat/friends');setActiveChatId(null)}}>
+        <div className={`sidebar-header ${activeChatId === 'friends' ? 'activeheader' : ''}`} onClick={() => {navigate('/chat/friends');setActiveChatId("friends")}}>
             <svg 
                 width="24" 
                 height="24" 
