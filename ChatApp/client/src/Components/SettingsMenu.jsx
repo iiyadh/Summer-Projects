@@ -1,7 +1,21 @@
 import { Link } from 'react-router-dom';
 import '../styles/Settings.css';
+import { LogoutOutlined } from '@ant-design/icons';
+import { Button } from 'antd';
+import { useAuthStore } from '../store/authStore';
+import { useNavigate } from 'react-router-dom';
 
 const SettingsMenu = () => {
+
+    const { logout } = useAuthStore();
+    const navigate = useNavigate();
+
+
+    const handleLogout = () => {
+        logout();
+        navigate('/login');
+    }
+
     return (
         <div className="settings-menu">
             <div className="topSection">
@@ -20,7 +34,12 @@ const SettingsMenu = () => {
                 </ul>
             </div>
             <div className="bottomSection">
-                <button>Logout</button>
+                <Button
+                    icon={<LogoutOutlined />}
+                    onClick={handleLogout}
+                >
+                Logout
+                </Button>
             </div>
         </div>
     );

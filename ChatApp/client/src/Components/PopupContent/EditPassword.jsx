@@ -1,23 +1,24 @@
-import { useRef } from 'react';
+import { useState  } from 'react';
 import "../../styles/Auth.css";
-import { useLoadingStore } from "../../store/loadingStore";
 import toast from 'react-hot-toast';
+import { Form, Input , Button ,Spin  } from 'antd';
+import { LoadingOutlined } from '@ant-design/icons';
+
 
 
 
 const EditPassword = () => {
-    const fromRef = useRef();
-    const { loading, show, hide } = useLoadingStore();
+    const [loading , setLoading] = useState(false);
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        const formData = new FormData(fromRef.current);
+    const handleSubmit = async (values) => {
+        const formData = values;
         const data = {
-            oldPassword: formData.get('Opass'),
-            newPassword: formData.get('pass'),
+            oldPassword: formData.Opass,
+            newPassword: formData.pass,
+            
         };
         
-        if(data.newPassword !== formData.get('Cpass')) {
+        if(data.newPassword !== formData.Cpass) {
             toast.error("Passwords do not match",{
                 duration: 2500,
                 removeDelay:500,
@@ -33,10 +34,9 @@ const EditPassword = () => {
             return;
         }
 
-        show();
+        setLoading(true);
         setTimeout(() => {
-            hide();
-            fromRef.current.reset();
+            setLoading(false);
             console.log(data);
         }, 2000);
     }
@@ -47,21 +47,53 @@ const EditPassword = () => {
                 <h1>Change Password</h1>
                 <p>You can change your Password any time</p>
             </div>
-            <form className="auth-form" ref={fromRef} onSubmit={(e) => handleSubmit(e)}>
-                <div className="form-group">
-                    <label htmlFor="Opass">Old Password</label>
-                    <input id="Opass" name="Opass" type="password" placeholder="Enter your old Password" disabled={loading} required />
-                </div>
-                <div className="form-group">
-                    <label htmlFor="pass">New Password</label>
-                    <input id="pass" name="pass" type="password" placeholder="Enter new Password" disabled={loading} required />
-                </div>
-                <div className="form-group">
-                    <label htmlFor="Cpass">Confirm Password</label>
-                    <input id="Cpass" type="password" name="Cpass" placeholder="Confirm your password" disabled={loading} required />
-                </div>
-                <button type="submit" className="auth-button" disabled={loading}>{loading ? "..." : "Change Password"}</button>
-            </form>
+            <Form 
+                className="auth-form"
+                onFinish={handleSubmit}
+            >
+                <Form.Item
+                    label="Old Password"
+                    name="Opass"
+                    layout='vertical'
+                    className="form-group"
+                    rules={[{ required: true, message: 'Please input your old Password!' }]}
+                >
+                    <Input.Password
+                        className="form-input"
+                        placeholder="Enter your old Password"
+                        disabled={loading}
+                    />
+                </Form.Item>
+                <Form.Item
+                    label="New Password"
+                    name="pass"
+                    layout='vertical'
+                    className="form-group"
+                    rules={[{ required: true, message: 'Please input your new Password!' }]}
+                >
+                    <Input.Password
+                        className="form-input"
+                        placeholder="Enter new Password"
+                        disabled={loading}
+                    />
+                </Form.Item>
+                <Form.Item
+                    label="Confirm Password"
+                    name="Cpass"
+                    layout='vertical'
+                    className="form-group"
+                    rules={[{ required: true, message: 'Please confirm your new Password!' }]}
+                >
+                    <Input.Password
+                        className="form-input"
+                        placeholder="Confirm your password"
+                        disabled={loading}
+                    />
+                </Form.Item>
+                <Button type="primary" htmlType="submit" className="auth-button" disabled={loading}>
+                   {loading ? <Spin  indicator={<LoadingOutlined style={{fontSize: 24,fontWeight:'bolder',color: "#fff" }} spin />} /> : "Change Password"}
+                </Button>
+            </Form>
         </div>
     )
 }

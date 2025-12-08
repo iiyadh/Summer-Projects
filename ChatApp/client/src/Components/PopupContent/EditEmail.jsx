@@ -1,6 +1,6 @@
 import "../../styles/Auth.css";
 import { useLoadingStore } from "../../store/loadingStore";
-import { useEffect, useState , useRef } from 'react';
+import { useState , useRef } from 'react';
 import OtpInput from "react-otp-input";
 import toast from 'react-hot-toast';
 import { useNavigate } from "react-router-dom";
@@ -15,12 +15,12 @@ const EditEmail = () => {
     const [verfied, setVerified] = useState(false);
 
 
-    useEffect(() => {
-        const ans = window.confirm("Are you sure you want to change your E-mail?");
-        if(!ans) {
-            navigate('/settings');
-        }
-    }, []);
+    // useEffect(() => {
+    //     const ans = window.confirm("Are you sure you want to change your E-mail?");
+    //     if(!ans) {
+    //         navigate('/settings');
+    //     }
+    // }, []);
 
     const handleVerfiy = async (e) => {
         e.preventDefault();

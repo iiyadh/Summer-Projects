@@ -1,11 +1,12 @@
 import { useState } from "react"
 import "../styles/ManageFriends.css"
+import {  Input ,Dropdown ,Button  } from "antd"
+import { StopOutlined, UserDeleteOutlined , MoreOutlined ,MessageOutlined} from '@ant-design/icons';
 
 
 const ManageFriends = () => {
     const [activeTab, setActiveTab] = useState("friends")
     const [searchQuery, setSearchQuery] = useState("")
-    const [showDropdown, setShowDropdown] = useState(null)
 
     // Sample data
     const [friends, setFriends] = useState([
@@ -57,12 +58,10 @@ const ManageFriends = () => {
 
     const handleBlock = (friendId) => {
         setFriends((prev) => prev.map((friend) => (friend.id === friendId ? { ...friend, status: "blocked" } : friend)))
-        setShowDropdown(null)
     }
 
     const handleUnfriend = (friendId) => {
         setFriends((prev) => prev.filter((friend) => friend.id !== friendId))
-        setShowDropdown(null)
     }
 
     const handleUnblock = (friendId) => {
@@ -83,11 +82,6 @@ const ManageFriends = () => {
 
     const handleCancelRequest = (requestId) => {
         setSentRequests((prev) => prev.filter((req) => req.id !== requestId))
-    }
-
-    // Close dropdown when clicking outside
-    const handleClickOutside = () => {
-        setShowDropdown(null)
     }
 
     const activeFriends = friends.filter((friend) => friend.status === "friend")
@@ -111,7 +105,7 @@ const ManageFriends = () => {
     )
 
     return (
-        <div className="friends-manager" onClick={handleClickOutside}>
+        <div className="friends-manager">
             {/* Navigation */}
             <div className="nav-tabs">
                 <button
@@ -127,7 +121,7 @@ const ManageFriends = () => {
                     Blocked
                 </button>
                 <button className={`nav-tab ${activeTab === "add" ? "active" : ""}`} onClick={() => setActiveTab("add")}>
-                    All
+                    Requests
                 </button>
                 <button className="add-friend-btn" onClick={() => setActiveTab("add")}>
                     Add Friend
@@ -135,27 +129,16 @@ const ManageFriends = () => {
             </div>
 
             {/* Search */}
-            {activeTab !== 'add' && <div className="search-container">
+            {activeTab !== 'add' && <>
                 <div className="search-icon"></div>
-                <input
-                    type="text"
-                    placeholder="Search"
+                    <Input.Search 
+                    placeholder="Type name ..." 
+                    variant="filled" 
                     className="search-input"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                 />
-            </div>}
-
-            {/* Send Friend Request */}
-            {activeTab === "add" && (
-                <div className="search-container">
-                    <input type="text" placeholder="Enter username" className="search-input" />
-                    <div className="list-search">
-                        
-                    </div>
-                </div>
-            )}
-
+            </>}
             {/* Friends Tab */}
             {activeTab === "friends" && (
                 <>
@@ -174,32 +157,35 @@ const ManageFriends = () => {
                                         <div className="username">{friend.username}</div>
                                     </div>
                                     <div className="friend-actions">
-                                        <button className="action-btn" title="Send message">
-                                            <span className="message-icon"></span>
-                                        </button>
+                                        <Button 
+                                            type="text"
+                                            className="action-btn"
+                                            title="Send message"
+                                            icon={<MessageOutlined />}>
+                                            {/* <span className="message-icon"></span> */}
+                                        </Button>
                                         <div style={{ position: "relative" }}>
-                                            <button
-                                                className="action-btn"
-                                                onClick={(e) => {
-                                                    e.stopPropagation()
-                                                    setShowDropdown(showDropdown === friend.id ? null : friend.id)
-                                                }}
-                                                title="More options"
-                                            >
-                                                <span className="more-icon"></span>
-                                            </button>
-                                            {showDropdown === friend.id && (
-                                                <div className="dropdown">
-                                                    <button className="dropdown-item" onClick={() => handleBlock(friend.id)}>
-                                                        <span className="user-block-icon"></span>
-                                                        Block
-                                                    </button>
-                                                    <button className="dropdown-item danger" onClick={() => handleUnfriend(friend.id)}>
-                                                        <span className="user-remove-icon"></span>
-                                                        Remove Friend
-                                                    </button>
-                                                </div>
-                                            )}
+                                            <Dropdown menu={{ 
+                                                items : [
+
+                                                    {
+                                                        key: 'remove',
+                                                        label : "Remove Friend",
+                                                        icon : <UserDeleteOutlined />
+                                                    },                                                    
+                                                    {
+                                                        key: 'block',
+                                                        label : "Block",
+                                                        icon : <StopOutlined  style={{color:"red"}}/>
+                                                    }
+                                                ],
+                                                onClick : ({key}) => {
+                                                    if (key === 'block') handleBlock(friend.id);
+                                                    else if (key === 'remove') handleUnfriend(friend.id);
+                                                }
+                                             }} trigger={['click']}>
+                                                    <MoreOutlined style={{ rotate: "90deg" }} />
+                                            </Dropdown>
                                         </div>
                                     </div>
                                 </div>

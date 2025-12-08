@@ -1,24 +1,22 @@
 
-import { useRef } from 'react';
+import { useState } from 'react';
 import "../../styles/Auth.css";
-import { useLoadingStore } from "../../store/loadingStore";
+import { Form, Input , Button ,Spin  } from 'antd';
+import { LoadingOutlined } from '@ant-design/icons';
 
 
 
 const EditBio = () => {
-    const formRef = useRef();
-    const { loading, show, hide } = useLoadingStore();
+    const [loading , setLoading] = useState(false);
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        const formData = new FormData(formRef.current);
+    const handleSubmit = async (values) => {
+        const formData = values;
         const data = {
-            bio: formData.get('bio'),
+            bio: formData.bio,
         };
-        show();
+        setLoading(true);
         setTimeout(() => {
-            hide();
-            formRef.current.reset();
+            setLoading(false);
             console.log(data);
         }, 2000);
     }
@@ -29,13 +27,28 @@ const EditBio = () => {
                 <h1>Edit Biography</h1>
                 <p>You can change your Biography any time</p>
             </div>
-            <form className="auth-form" ref={formRef} onSubmit={(e) => handleSubmit(e)}>
-                <div className="form-group">
-                    <label htmlFor="bio">New Username</label>
-                    <textarea id="bio" name="bio" type="text" placeholder="Enter new Bio" disabled={loading} required rows="4"></textarea>
-                </div>
-                <button type="submit" className="auth-button" disabled={loading}>{loading ? "..." : "Edit Biography"}</button>
-            </form>
+            <Form 
+                className="auth-form"
+                onFinish={handleSubmit}
+            >
+                <Form.Item
+                    label="Biography"
+                    name="bio"
+                    layout='vertical'
+                    className="form-group"
+                    rules={[{ required: true, message: 'Please input your new Biography!' }]}
+                >
+                    <Input.TextArea
+                        className="form-input" 
+                        placeholder="Enter new Bio" 
+                        disabled={loading} 
+                        rows={4} 
+                    />
+                </Form.Item>
+                <Button type="primary" htmlType="submit" className="auth-button" disabled={loading}>
+                    {loading ? <Spin  indicator={<LoadingOutlined style={{fontSize: 24,fontWeight:'bolder',color: "#fff" }} spin />} /> : "Edit Biography"}
+                </Button>
+            </Form>
         </div>
     )
 }

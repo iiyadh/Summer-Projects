@@ -108,7 +108,7 @@ const ChatHistory = ()=>{
                     </Button>
                     { emojiPickerVisible && <EmojiPicker
                         className="emoji-board"
-                        onEmojiClick={(emojiData) => console.log(emojiData.emoji)}
+                        onEmojiClick={(emojiData) => setMessage(prev => prev + emojiData.emoji)}
                     />
                     }
                     

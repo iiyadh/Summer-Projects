@@ -1,22 +1,26 @@
 import { useState } from 'react';
 import '../styles/Settings.css';
-import Popup from './common/Popup';
 import EditUsername from './PopupContent/EditUsername';
 import EditEmail from './PopupContent/EditEmail';
 import EditBio from './PopupContent/EditBio';
 import EditPassword from './PopupContent/EditPassword';
+import { Button, Modal, Popconfirm } from 'antd';
+import { EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons';
 
 
 const EditProfile = () => {
     const [showEmail, setShowEmail] = useState(false);
     const [isPopupOpen, setIsPopupOpen] = useState(false);
     const [activePopUp, setActivePopUp] = useState('');
-    const [clickSpot, setClickSpot] = useState({ x: 0, y: 0 });
 
     const handleOpenPopup = (e,pop) => {
-        setClickSpot({x:e.clientX, y:e.clientY});
         setActivePopUp(pop);
         setIsPopupOpen(true);
+    }
+
+
+    const handleCancel = () => {
+        setIsPopupOpen(false);
     }
 
     return (
@@ -40,7 +44,6 @@ const EditProfile = () => {
                             </div>
                         </div>
                     </div>
-                    {/* <button className="edit-profile-btn">Edit User Profile</button> */}
                 </div>
 
                 {/* Profile Fields */}
@@ -50,7 +53,7 @@ const EditProfile = () => {
                             <label className="field-label">Username</label>
                             <div className="field-value">thedoctor2367</div>
                         </div>
-                        <button className="field-btn" onClick={(e)=>handleOpenPopup(e,"editUsername")}>Edit</button>
+                        <Button className="field-btn" onClick={(e)=>handleOpenPopup(e,"editUsername")}>Edit</Button>
                     </div>
 
                     <div className="field-group">
@@ -58,13 +61,22 @@ const EditProfile = () => {
                             <label className="field-label">Email</label>
                             <div className="email-section">
                                 <span className="field-value">{showEmail ? "thedoctor2367@gmail.com" : "************@gmail.com"}</span>
-                                <button className="reveal-btn" onClick={() => setShowEmail(!showEmail)}>
-                                    <span className="eye-icon">{showEmail ? "👁️‍🗨️" : "👁️"}</span>
+                                <Button className="reveal-btn" onClick={() => setShowEmail(!showEmail)}>
+                                    <span className="eye-icon">{showEmail ? <EyeOutlined /> : <EyeInvisibleOutlined />}</span>
                                     {showEmail ? "Hide" : "Reveal"}
-                                </button>
+                                </Button>
                             </div>
                         </div>
-                        <button className="field-btn" onClick={(e)=>handleOpenPopup(e,"editEmail")}>Edit</button>
+                            <Popconfirm
+                                title="Change E-mail"
+                                description="Are you sure you want to change your E-mail?"
+                                onCancel={handleCancel}
+                                onConfirm={(e) => handleOpenPopup(e, "editEmail")}
+                                okText="Yes"
+                                cancelText="No"
+                            >
+                                <Button className="field-btn">Edit</Button>
+                            </Popconfirm>
                     </div>
 
                     <div className="field-group">
@@ -72,7 +84,7 @@ const EditProfile = () => {
                             <label className="field-label">Bio</label>
                             <div className="field-value placeholder">You haven't added a biography yet.</div>
                         </div>
-                        <button className="field-btn" onClick={(e)=>handleOpenPopup(e,"editBio")}>Edit</button>
+                        <Button className="field-btn" onClick={(e)=>handleOpenPopup(e,"editBio")}>Edit</Button>
                     </div>
                 </div>
             </div>
@@ -80,15 +92,20 @@ const EditProfile = () => {
             {/* Password Section */}
             <div className="password-section">
                 <h3 className="section-title">Password and Authentication</h3>
-                <button className="change-password-btn" onClick={(e)=>handleOpenPopup(e,"changePassword")}>Change Password</button>
+                <Button className="change-password-btn" onClick={(e)=>handleOpenPopup(e,"changePassword")}>Change Password</Button>
             </div>
         </div>
-            {isPopupOpen && <Popup onClose={() => setIsPopupOpen(false)} spot={clickSpot}>
+            <Modal
+                title="Basic Modal"
+                footer={null}
+                open={isPopupOpen}
+                onCancel={handleCancel}
+            >
                 {activePopUp === 'editUsername' && <EditUsername />}
                 {activePopUp === 'editEmail' && <EditEmail />}
                 {activePopUp === 'editBio' && <EditBio />}
                 {activePopUp === 'changePassword' && <EditPassword />}
-            </Popup>}
+            </Modal>
         </>
     )
 }

@@ -1,20 +1,20 @@
-import { useRef } from 'react';
+import { useState } from 'react';
 import "../../styles/Auth.css";
-import { useLoadingStore } from "../../store/loadingStore";
 import toast from 'react-hot-toast';
+import { Form, Input , Button ,Spin  } from 'antd';
+import { LoadingOutlined } from '@ant-design/icons';
+
 
 
 
 const EditUsername = () => {
-    const fromRef = useRef();
-    const { loading, show, hide } = useLoadingStore();
+    const [loading , setLoading] = useState(false);
+  
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        const formData = new FormData(fromRef.current);
+    const handleSubmit = async (values) => {
+        const formData = values;
         const data = {
-            username: formData.get('username'),
-            password: formData.get('pass'),
+            username: formData.username,
         };
 
         if(new RegExp(/^[a-zA-Z0-9]+$/).test(data.username) === false) {
@@ -25,10 +25,9 @@ const EditUsername = () => {
             return;
         }
 
-        show();
+        setLoading(true);
         setTimeout(() => {
-            hide();
-            fromRef.current.reset();
+            setLoading(false);
             console.log(data);
         }, 2000);
     }
@@ -39,17 +38,27 @@ const EditUsername = () => {
                 <h1>Change Username</h1>
                 <p>You can change your Username any time</p>
             </div>
-            <form className="auth-form" ref={fromRef} onSubmit={(e) => handleSubmit(e)}>
-                <div className="form-group">
-                    <label htmlFor="username">New Username</label>
-                    <input id="username" name="username" type="text" placeholder="Enter new username" disabled={loading} required />
-                </div>
-                <div className="form-group">
-                    <label htmlFor="pass">Password</label>
-                    <input id="pass" type="password" name="pass" placeholder="Enter your password" disabled={loading} required />
-                </div>
-                <button type="submit" className="auth-button" disabled={loading}>{loading ? "..." : "Change Username"}</button>
-            </form>
+            <Form
+                className="auth-form"
+                onFinish={handleSubmit}
+            >
+                <Form.Item
+                    label="Username"
+                    name="username"
+                    layout='vertical'
+                    className="form-group"
+                    rules={[{ required: true, message: 'Please input your new Username!' }]}
+                >
+                    <Input
+                        className="form-input"
+                        placeholder="Enter new Username"
+                        disabled={loading}
+                    />
+                </Form.Item>
+                <Button type="primary" htmlType="submit" className="auth-button" disabled={loading}>
+                    {loading ? <Spin indicator={<LoadingOutlined style={{ fontSize: 24, fontWeight: 'bolder', color: "#fff" }} spin />} /> : "Edit Username"}
+                </Button>
+            </Form>
         </div>
     )
 }
