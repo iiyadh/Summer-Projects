@@ -1,11 +1,16 @@
 import '../styles/Chat.css';
 import { useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
+import { Upload, Form, Input, Button } from 'antd';
+import { PhoneOutlined ,InfoCircleOutlined , PlusOutlined ,SendOutlined ,SmileFilled ,DeleteOutlined } from '@ant-design/icons';
+import EmojiPicker from 'emoji-picker-react';
 
 const ChatHistory = ()=>{
 
     const [message, setMessage] = useState("");
+    const [fileList, setFileList] = useState([]);
     const { messages } = useOutletContext();
+    const [emojiPickerVisible, setEmojiPickerVisible] = useState(false);
 
     const handleSendMessage = (e) => {
         e.preventDefault()
@@ -27,9 +32,8 @@ const ChatHistory = ()=>{
                     </div>
                 </div>
                 <div className="chat-actions">
-                    <button className="action-btn">📞</button>
-                    <button className="action-btn">📹</button>
-                    <button className="action-btn">ℹ️</button>
+                    <PhoneOutlined className="action-btn" />
+                    <InfoCircleOutlined className="action-btn"/>
                 </div>
             </div>
 
@@ -56,29 +60,68 @@ const ChatHistory = ()=>{
 
             {/* Message Input */}
             <div className="message-input-area">
-                <form onSubmit={handleSendMessage} className="message-form">
-                    <div className="input-container">
-                        <button type="button" className="attachment-btn">
-                            📎
-                        </button>
-                        <input
-                            type="text"
-                            value={message}
-                            onChange={(e) => setMessage(e.target.value)}
-                            placeholder="Type a message..."
-                            className="message-input"
-                        />
-                        <button type="button" className="emoji-btn">
-                            😊
-                        </button>
-                        <button type="submit" className="send-button" disabled={!message.trim()}>
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <line x1="22" y1="2" x2="11" y2="13"></line>
-                                <polygon points="22,2 15,22 11,13 2,9"></polygon>
-                            </svg>
-                        </button>
-                    </div>
-                </form>
+                <div className='uploaded-files'>
+                    {fileList.map(file => (
+                        <div key={file.uid} className="uploaded-file">
+                            <span><h4>{file.name}</h4> <p>({(file.size / 1024).toFixed(2)} KB)</p></span>
+                            <Button
+                            onClick={() => {
+                                setFileList(fileList.filter(f => f.uid !== file.uid));}}
+                                type="text"
+                                icon={<DeleteOutlined style={{color:"red"}}/>}
+                            >
+                            </Button>
+                        </div>
+                    
+                    ))}
+                </div>
+                <Form
+                    onFinish={handleSendMessage}
+                    className="message-form"
+                >
+                <div className="input-container">
+                    <Upload 
+                        className='attachment-btn'
+                        fileList={fileList}
+                        onChange={({fileList}) => {
+                            setFileList(fileList);
+                            console.log(fileList);
+                        }}
+                        itemRender={() => null}
+                        >
+          
+                        <PlusOutlined  />
+                    </Upload >
+                    <Input.TextArea
+                        value={message}
+                        onChange={(e) => setMessage(e.target.value)}
+                        className="message-input"
+                        bordered={false}
+                        size="small"
+                         />
+                    <Button 
+                        type="button" 
+                        className="emoji-btn"
+                        onClick={() => setEmojiPickerVisible(!emojiPickerVisible)}
+                        icon={<SmileFilled />}
+                        >
+                    </Button>
+                    { emojiPickerVisible && <EmojiPicker
+                        className="emoji-board"
+                        onEmojiClick={(emojiData) => console.log(emojiData.emoji)}
+                    />
+                    }
+                    
+                </div>
+                    <Button 
+                        type="primary"
+                        htmlType="submit"
+                        className="send-button"
+                        icon={<SendOutlined />}
+                        disabled={!message.trim() && fileList.length === 0}>
+                    </Button>
+                </Form>
+
             </div>
         </div>
     )

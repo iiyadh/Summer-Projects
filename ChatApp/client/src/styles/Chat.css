@@ -344,7 +344,10 @@
 }
 
 .message-form {
+  display: flex;
+  align-items: center;
   width: 100%;
+  gap:12px;
 }
 
 .input-container {
@@ -355,6 +358,7 @@
   padding: 8px 12px;
   gap: 8px;
   transition: background-color 0.2s;
+  width: 100%;
 }
 
 .input-container:focus-within {
@@ -369,14 +373,19 @@
   border-radius: 50%;
   cursor: pointer;
   font-size: 16px;
-  transition: background-color 0.2s;
+  transition: color 0.2s;
   color: #666666;
 }
 
 .attachment-btn:hover,
 .emoji-btn:hover {
-  background-color: #dddddd;
   color: #333333;
+}
+
+.input-container .emoji-board{
+  position: absolute;
+  bottom: 70px;
+  right: 20px;
 }
 
 .message-input {
@@ -385,7 +394,12 @@
   border: none;
   color: #333333;
   font-size: 14px;
-  padding: 8px 12px;
+  display: flex;
+  padding: 5px 10px;
+  max-height: 25px;
+  min-height: 25px;
+  height: 25px;
+  overflow-y: auto;
   outline: none;
 }
 
@@ -475,3 +489,30 @@
   fill: #03a6a1;
 }
 
+.uploaded-files{
+  display: flex;
+  gap: 8px;
+  flex-direction: column;
+  margin-bottom: 8px;
+  max-height: 100px;
+  overflow-y: auto;
+}
+
+.uploaded-file{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  background-color: #f0f0f0;
+  padding: 8px 12px;
+  border-radius: 16px;
+
+  span{
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    align-items: center;
+  }
+
+  
+}
