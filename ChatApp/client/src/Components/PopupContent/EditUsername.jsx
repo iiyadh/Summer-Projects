@@ -1,4 +1,3 @@
-import Loader from "../../effects/Loader";
 import { useRef } from 'react';
 import "../../styles/Auth.css";
 import { useLoadingStore } from "../../store/loadingStore";
@@ -49,7 +48,7 @@ const EditUsername = () => {
                     <label htmlFor="pass">Password</label>
                     <input id="pass" type="password" name="pass" placeholder="Enter your password" disabled={loading} required />
                 </div>
-                <button type="submit" className="auth-button" disabled={loading}>{loading ? <Loader /> : "Change Username"}</button>
+                <button type="submit" className="auth-button" disabled={loading}>{loading ? "..." : "Change Username"}</button>
             </form>
         </div>
     )

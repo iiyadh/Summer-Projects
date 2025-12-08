@@ -1,4 +1,3 @@
-import Loader from "../../effects/Loader";
 import "../../styles/Auth.css";
 import { useLoadingStore } from "../../store/loadingStore";
 import { useEffect, useState , useRef } from 'react';
@@ -101,7 +100,7 @@ const EditEmail = () => {
                         renderInput={(props) => <input {...props} />}
                     />
                 </div>
-                <button type="submit" className="auth-button" disabled={loading} onClick={handleVerfiy}>{loading ? <Loader /> : "Verify"}</button>
+                <button type="submit" className="auth-button" disabled={loading} onClick={handleVerfiy}>{loading ? "..." : "Verify"}</button>
             </form>
         </div>}
         {verfied && <div className="generic-container">
@@ -114,7 +113,7 @@ const EditEmail = () => {
                     <label htmlFor="email">New E-mail</label>
                     <input id="email" name="email" type="email" placeholder="Enter new email" disabled={loading} required />
                 </div>
-                <button type="submit" className="auth-button" disabled={loading}>{loading ? <Loader /> : "Change E-mail"}</button>
+                <button type="submit" className="auth-button" disabled={loading}>{loading ? "..." : "Change E-mail"}</button>
             </form>
         </div>}
     </>

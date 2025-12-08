@@ -1,28 +1,26 @@
 import { Link } from 'react-router-dom';
 import '../styles/Auth.css';
-import { useRef } from 'react';
+import { useState } from 'react';
 import toast from 'react-hot-toast';
-import { useLoadingStore } from '../store/loadingStore';
 import { useAuthStore } from '../store/authStore';
-import  Loader from '../effects/Loader';
 import { useNavigate } from 'react-router-dom';
+import { Form, Input , Button ,Spin } from 'antd';
+import { LoadingOutlined } from '@ant-design/icons';
 
 const Register = () => {
-    const fromRef = useRef();
-    const { loading, show, hide } = useLoadingStore();
+    const [loading, setLoading] = useState(false);
     const { register } = useAuthStore();
     const navigate = useNavigate();
 
-    const handleSubmit = async (e) =>{
-        e.preventDefault();
-        const formData = new FormData(fromRef.current);
+    const handleSubmit = async (values) =>{
+        const formData = values;
         const data = {
-            username: formData.get('username'),
-            email: formData.get('email'),
-            password: formData.get('pass'),
+            username: formData.username,
+            email: formData.email,
+            password: formData.password,
         }
 
-        if(data.password !== formData.get('Cpass')) {
+        if(data.password !== formData.cpassword) {
             toast.error("Passwords do not match",{
                 duration: 2500,
                 removeDelay:500,
@@ -46,23 +44,28 @@ const Register = () => {
             });
             return;
         }
-
-        show();
-        const result = await register(data);
-        hide();
-
-        if(result.success) {
-            toast.success(result.data.message, {
+        setLoading(true);
+        try{
+            const result = await register(data);
+            if(result.success) {
+                toast.success(result.data.message, {
+                    duration: 2500,
+                    removeDelay: 500,
+                });
+                navigate('/login');
+            }else{
+                toast.error(result.error,{
+                    duration: 2500,
+                    removeDelay: 500,
+                });
+            }
+        }catch(err){
+            toast.error("Something went wrong. Please try again.",{
                 duration: 2500,
                 removeDelay: 500,
             });
-            fromRef.current.reset();
-            navigate('/login');
-        }else{
-            toast.error(result.error,{
-                duration: 2500,
-                removeDelay: 500,
-            });
+        } finally {
+            setLoading(false);
         }
     }
 
@@ -74,25 +77,51 @@ const Register = () => {
                     <h1>Create Account</h1>
                     <p>Sign up to get started with Chat App</p>
                 </div>
-                <form className="auth-form" ref={fromRef} onSubmit={(e)=>handleSubmit(e)}>
-                    <div className="form-group">
-                        <label htmlFor="username">Username</label>
-                        <input id="username" name="username" type="text" placeholder="Choose a username" disabled={loading} required />
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="email">Email</label>
-                        <input id="email" type="email" name="email" placeholder="Enter your email" disabled={loading} required />
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="pass">Password</label>
-                        <input id="pass" type="password" name="pass" placeholder="Create a password" disabled={loading} required />
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="Cpass">Confirm Password</label>
-                        <input id="Cpass" type="password" name="Cpass" placeholder="Confirm your password" disabled={loading} required />
-                    </div>
-                    <button type="submit" className="auth-button" disabled={loading}>{loading ? <Loader /> : "Create Account"}</button>
-                </form>
+                <Form
+                    className='auth-form'
+                    onFinish={handleSubmit}
+                    autoComplete="off"
+                >
+                        <Form.Item
+                            label="Username"
+                            name="username"
+                            layout='vertical'
+                            className='form-group'
+                            rules={[{ required: true, message: 'Please input your username!' }]}
+                        >
+                            <Input className='form-input'/>
+                        </Form.Item>
+                        <Form.Item
+                            label="Email"
+                            name="email"
+                            layout='vertical'
+                            className='form-group'
+                            rules={[{ required: true, message: 'Please input your Email!' }]}
+                        >
+                            <Input  className='form-input'/>
+                        </Form.Item>
+                        <Form.Item
+                            label="Password"
+                            name="password"
+                            layout='vertical'
+                            className='form-group'
+                            rules={[{ required: true, message: 'Please input your Password!' }]}
+                        >
+                            <Input.Password  className='form-input'/>
+                        </Form.Item>
+                        <Form.Item
+                            label="Confirme Password"
+                            name="cpassword"
+                            layout='vertical'
+                            className='form-group'
+                            rules={[{ required: true, message: 'Please input your Confirme Passoword!' }]}
+                        >
+                            <Input.Password  className='form-input'/>
+                        </Form.Item>
+                        <Button type="primary" htmlType="submit" className="auth-button" disabled={loading}>
+                            {loading ? <Spin  indicator={<LoadingOutlined style={{fontSize: 24,fontWeight:'bolder',color: "#fff" }} spin />} /> : "Sign Up"}
+                        </Button>
+                </Form>
                 <div className="auth-link">
                     <p>Already have an account? <Link to="/login">Sign in</Link></p>
                 </div>

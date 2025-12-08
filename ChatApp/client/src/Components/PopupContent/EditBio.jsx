@@ -1,4 +1,4 @@
-import Loader from "../../effects/Loader";
+
 import { useRef } from 'react';
 import "../../styles/Auth.css";
 import { useLoadingStore } from "../../store/loadingStore";
@@ -34,7 +34,7 @@ const EditBio = () => {
                     <label htmlFor="bio">New Username</label>
                     <textarea id="bio" name="bio" type="text" placeholder="Enter new Bio" disabled={loading} required rows="4"></textarea>
                 </div>
-                <button type="submit" className="auth-button" disabled={loading}>{loading ? <Loader /> : "Edit Biography"}</button>
+                <button type="submit" className="auth-button" disabled={loading}>{loading ? "..." : "Edit Biography"}</button>
             </form>
         </div>
     )
