@@ -1,5 +1,4 @@
 import "../../styles/Auth.css";
-import { useLoadingStore } from "../../store/loadingStore";
 import { useState , useRef } from 'react';
 import OtpInput from "react-otp-input";
 import toast from 'react-hot-toast';
@@ -11,16 +10,7 @@ const EditEmail = () => {
     const navigate = useNavigate();
     const formRef = useRef();
     const [optCode,setOptCode] = useState("");
-    const { loading, show, hide } = useLoadingStore();
     const [verfied, setVerified] = useState(false);
-
-
-    // useEffect(() => {
-    //     const ans = window.confirm("Are you sure you want to change your E-mail?");
-    //     if(!ans) {
-    //         navigate('/settings');
-    //     }
-    // }, []);
 
     const handleVerfiy = async (e) => {
         e.preventDefault();

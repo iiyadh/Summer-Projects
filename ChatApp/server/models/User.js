@@ -34,6 +34,19 @@ const userSchema = new mongoose.Schema({
         type: Date,
         default: null,
     },
+    friends: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        status : { type: String , enum: ['active', 'blocked'], default: 'active'}
+    }],
+    friendsRequests: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+    }],
+    sentRequests: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+    }],
 });
 
 const User = mongoose.model('User', userSchema);

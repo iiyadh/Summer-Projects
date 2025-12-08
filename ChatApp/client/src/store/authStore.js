@@ -1,8 +1,10 @@
 import api from '../api/api';
-import { create } from 'zustand';
+import { create  } from 'zustand';
+import { persist } from 'zustand/middleware';
 
-export const useAuthStore = create((set) => ({
+export const useAuthStore = create(persist((set) => ({
     token: null,
+    uid : null,
 
     register: async (data) => {
         try {
@@ -30,6 +32,24 @@ export const useAuthStore = create((set) => ({
         }
     },
 
+    verifAuth : async () => {
+        try {
+            const res = await api.get("/auth/isValidAuth", {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            if (res.status == 200) {
+                set({uid : res.data })
+            }else{
+                set({ token: null });
+            }
+
+        } catch (err) {
+            console.log(err);
+        }
+    },
+
     logout: async () => {
         set({ token: null });
         try{
@@ -42,4 +62,4 @@ export const useAuthStore = create((set) => ({
             };
         }
     },
-}));
+})));

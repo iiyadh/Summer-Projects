@@ -21,6 +21,8 @@ import  EditProfile  from './Components/EditProfile.jsx';
 import Apperance from './Components/Apparence.jsx';
 import Language from './Components/Language.jsx';
 import ManageFriends from './Components/ManageFriends.jsx';
+import RequireAuth from './Protection/RequireAuth.jsx';
+import Authenticated from './Components/Authenticated.jsx';
 
 const router = createBrowserRouter([
   {
@@ -28,14 +30,14 @@ const router = createBrowserRouter([
     element:<App />,
     children:[
       {index: true, element: <Home />},
-      {path: 'login', element: <Login />},
-      {path: 'register', element: <Register/>},
-      {path: 'forgot-password', element: <ForgotPassword />},
-      {path: 'reset-password/:token', element: <ResetPassword />},
+      {path: 'login', element: <Authenticated><Login /></Authenticated>},
+      {path: 'register', element: <Authenticated><Register/></Authenticated>},
+      {path: 'forgot-password', element: <Authenticated><ForgotPassword /></Authenticated>},
+      {path: 'reset-password/:token', element: <Authenticated><ResetPassword /></Authenticated>},
       {path: '*', element: <NotFound/>},
       {
         path: '/chat',
-        element: <Chat />,
+        element: <RequireAuth><Chat /></RequireAuth>,
         children:[
           {index: true, element: <ChatHome/>},
           {path: 'friends', element: <ManageFriends />},
@@ -44,7 +46,7 @@ const router = createBrowserRouter([
       },
       {
         path: '/settings',
-        element:<Settings />,
+        element:<RequireAuth><Settings /></RequireAuth>,
         children:[
           {index: true, element: <Navigate to="/settings/profile" replace />},
           {path: 'profile', element: <EditProfile />},
