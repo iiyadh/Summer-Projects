@@ -3,22 +3,33 @@ import { useState } from 'react';
 import "../../styles/Auth.css";
 import { Form, Input , Button ,Spin  } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
+import { useUserStore } from '../../store/userStore';
+import toast from 'react-hot-toast';
 
 
 
-const EditBio = () => {
+const EditBio = ({setUserInfo}) => {
     const [loading , setLoading] = useState(false);
+    const { updateBio } = useUserStore();
 
     const handleSubmit = async (values) => {
-        const formData = values;
-        const data = {
-            bio: formData.bio,
-        };
         setLoading(true);
-        setTimeout(() => {
+        try{
+            await updateBio(values.bio);
+            setUserInfo(prev => ({...prev, bio: values.bio}));
+            toast.success("Biography updated successfully", {
+                duration: 2500,
+                removeDelay: 500,
+            });
+        }catch(err){
+            console.log(err);
+            toast.error(err.response?.data?.message || "Something went wrong", {
+                duration: 2500,
+                removeDelay: 500,
+            });
+        }finally{
             setLoading(false);
-            console.log(data);
-        }, 2000);
+        }
     }
 
     return (

@@ -13,10 +13,13 @@ const server = http.createServer(app);
 const wss = new WebSocket.Server({server});
 
 app.use(cors({
-    origin: process.env.FRONTEND_URL,
-    methods: ["*"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true
+    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+    exposedHeaders: ["Authorization"],
+    credentials: true,
+    preflightContinue: false,
+    optionsSuccessStatus: 204
 }))
 
 app.use(express.json());
@@ -25,6 +28,7 @@ app.use(cookieParser());
 
 app.use('/api/auth', require('./routes/authRoute'));
 app.use('/api/recovery', require('./routes/passwordRoute'));
+app.use('/api/user', require('./routes/userRoute'));
 
 server.listen(process.env.PORT,()=>{
     console.log('Server is running on port ' + process.env.PORT);

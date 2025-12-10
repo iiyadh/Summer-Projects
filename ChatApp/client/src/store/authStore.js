@@ -6,6 +6,10 @@ export const useAuthStore = create(persist((set) => ({
     token: null,
     uid : null,
 
+    setToken: (token) => {
+        set({ token });
+    },
+
     register: async (data) => {
         try {
             const res = await api.post('/auth/register', data);
@@ -33,6 +37,7 @@ export const useAuthStore = create(persist((set) => ({
     },
 
     verifAuth : async () => {
+        const token = useAuthStore.getState().token;
         try {
             const res = await api.get("/auth/isValidAuth", {
                 headers: {
@@ -62,4 +67,6 @@ export const useAuthStore = create(persist((set) => ({
             };
         }
     },
-})));
+}), {
+    name: 'auth-storage',
+}));

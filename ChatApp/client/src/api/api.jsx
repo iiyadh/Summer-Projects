@@ -32,9 +32,9 @@ api.interceptors.response.use(
   response => response,
   async error => {
     const originalRequest = error.config;
-    if (error.response.status === 403 && !originalRequest._retry){
+    if (error?.response?.status === 403 && !originalRequest._retry){
       originalRequest._retry = true;
-      const { data } = await axios.post('/auth/refresh');
+      const { data } = await axios.post('http://localhost:3000/api/auth/refresh');
       originalRequest.headers['Authorization'] = `Bearer ${data.token}`;
       useAuthStore.getState().setToken(data.token);
       return api(originalRequest);

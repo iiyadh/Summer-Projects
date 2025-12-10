@@ -1,16 +1,20 @@
 import "../../styles/Auth.css";
-import { useState , useRef } from 'react';
+import { useState  } from 'react';
 import OtpInput from "react-otp-input";
 import toast from 'react-hot-toast';
 import { useNavigate } from "react-router-dom";
+import { Button, Form, Input, Spin } from "antd";
+import { LoadingOutlined } from '@ant-design/icons';
+import  { useUserStore } from "../../store/userStore";
 
 
 
-const EditEmail = () => {
+const EditEmail = ( {setUserInfo} ) => {
     const navigate = useNavigate();
-    const formRef = useRef();
     const [optCode,setOptCode] = useState("");
     const [verfied, setVerified] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const { updateEmail ,verifyOTPCode } = useUserStore();
 
     const handleVerfiy = async (e) => {
         e.preventDefault();
@@ -18,19 +22,30 @@ const EditEmail = () => {
             toast.error("Invalid OTP Code");
             return;
         }
-        show();
-        setTimeout(() => {
-            hide();
-            setOptCode("");
+        setLoading(true);
+        try {
+            setLoading(false);
+            await verifyOTPCode(optCode);
             setVerified(true);
-        }, 2000);
+            toast.success("OTP Verified Successfully", {
+                duration: 2500,
+                removeDelay: 500,
+            });
+        } catch (err) {
+            console.log(err);
+            toast.error(err.response?.data?.message || "Something went wrong", {
+                duration: 2500,
+                removeDelay: 500,
+            });
+        } finally {
+            setLoading(false);
+        }
     }
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        const formData = new FormData(formRef.current);
+    const handleSubmit = async (values) => {
+        const formData = values;
         const data = {
-            email: formData.get('email'),
+            email: formData.email,
         };
 
         if(!new RegExp(/^[^\s@]+@[^\s@]+\.[^\s@]+$/).test(data.email)) {
@@ -40,17 +55,25 @@ const EditEmail = () => {
             });
             return;
         }
-        show();
-        setTimeout(() => {
-            hide();
-            formRef.current.reset();
-            console.log(data);
+        setLoading(true);
+        try{
+            setLoading(false);
+            await updateEmail(data.email);
+            setUserInfo(prev => ({...prev, email: data.email}));
             toast.success("E-mail changed successfully", {
                 duration: 2500,
                 removeDelay: 500,
             });
             navigate('/settings');
-        }, 2000);
+        }catch(err){
+            console.log(err);
+            toast.error(err.response?.data?.message || "Something went wrong", {
+                duration: 2500,
+                removeDelay: 500,
+            });
+        } finally {
+            setLoading(false);
+        }
     }
 
     return (
@@ -60,7 +83,7 @@ const EditEmail = () => {
                 <h1>Change E-mail</h1>
                 <p>We have sent code with 4 degits on your email tabaiiyadh317@gmail.com</p>
             </div>
-            <form className="auth-form">
+            <Form className="auth-form">
                 <div className="form-group">
                     <label htmlFor="opt">Enter Verification code Here</label>
                     <OtpInput
@@ -90,21 +113,36 @@ const EditEmail = () => {
                         renderInput={(props) => <input {...props} />}
                     />
                 </div>
-                <button type="submit" className="auth-button" disabled={loading} onClick={handleVerfiy}>{loading ? "..." : "Verify"}</button>
-            </form>
+                <Button type="submit" className="auth-button" disabled={loading} onClick={handleVerfiy}>
+                    {loading ? <Spin  indicator={<LoadingOutlined style={{fontSize: 24,fontWeight:'bolder',color: "#fff" }} spin />} />: "Verify"}</Button>
+            </Form>
         </div>}
         {verfied && <div className="generic-container">
             <div className="auth-header">
                 <h1>Edit E-mail</h1>
                 <p>You can change your E-mail any time</p>
             </div>
-            <form className="auth-form" ref={formRef} onSubmit={(e) => handleSubmit(e)} >
+            <Form className="auth-form" 
+                onFinish={handleSubmit} >
                 <div className="form-group">
-                    <label htmlFor="email">New E-mail</label>
-                    <input id="email" name="email" type="email" placeholder="Enter new email" disabled={loading} required />
+                    <Form.Item
+                        label="E-mail"
+                        name="email"
+                        rules={[{ required: true, message: 'Please input your new E-mail!' }]}
+                        style={{ width: '100%' }}
+                        layout='vertical'
+                        className="form-group"
+                    >
+                        <Input 
+                            placeholder="Enter new email"
+                            disabled={loading} 
+                            className="form-input"
+                            />
+                    </Form.Item>
                 </div>
-                <button type="submit" className="auth-button" disabled={loading}>{loading ? "..." : "Change E-mail"}</button>
-            </form>
+                <button type="submit" className="auth-button" disabled={loading}>
+                {loading ? <Spin  indicator={<LoadingOutlined style={{fontSize: 24,fontWeight:'bolder',color: "#fff" }} spin />} />: "Change E-mail"}</button>
+            </Form>
         </div>}
     </>
     )

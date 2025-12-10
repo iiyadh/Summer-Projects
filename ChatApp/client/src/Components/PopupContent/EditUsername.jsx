@@ -3,12 +3,13 @@ import "../../styles/Auth.css";
 import toast from 'react-hot-toast';
 import { Form, Input , Button ,Spin  } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
+import { useUserStore } from '../../store/userStore';
 
 
 
-
-const EditUsername = () => {
+const EditUsername = ({setUserInfo}) => {
     const [loading , setLoading] = useState(false);
+    const { updateUsername } = useUserStore();
   
 
     const handleSubmit = async (values) => {
@@ -26,10 +27,23 @@ const EditUsername = () => {
         }
 
         setLoading(true);
-        setTimeout(() => {
+        try{
             setLoading(false);
-            console.log(data);
-        }, 2000);
+            await updateUsername(data.username);
+            setUserInfo(prev => ({...prev, username: data.username}));
+            toast.success("Username updated successfully", {
+                duration: 2500,
+                removeDelay: 500,
+            });
+        }catch(err){
+            console.log(err);
+            toast.error(err.response?.data?.message || "Something went wrong", {
+                duration: 2500,
+                removeDelay: 500,
+            });
+        }finally{
+            setLoading(false);
+        }
     }
 
     return (

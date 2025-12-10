@@ -2,12 +2,17 @@ import '../styles/Chat.css';
 import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { SettingFilled , UserOutlined } from '@ant-design/icons';
+import { useUserStore } from '../store/userStore';
+import { Avatar } from 'antd';
+import { useEffect } from 'react';
 
 const ChatSideBar = ({chats , activeChatId , setActiveChatId}) =>{
     const [width, setWidth] = useState(500);
     const sidebarRef = useRef(null);
     const isResizing = useRef(false);
     const navigate = useNavigate();
+    const [userInfo, setUserInfo] = useState({});
+    const { getUserProfile } = useUserStore();
 
     const handleMouseDown = () =>{
         isResizing.current = true;
@@ -36,6 +41,19 @@ const ChatSideBar = ({chats , activeChatId , setActiveChatId}) =>{
         setActiveChatId(id);
         navigate(`/chat/${id}`);
     }
+
+    const fetchUserProfile = async () => {
+        try {
+            const data = await getUserProfile();
+            setUserInfo(data);
+        } catch (error) {
+            console.error('Error fetching user profile:', error);
+        }
+    };
+
+    useEffect(() => {
+        fetchUserProfile();
+    },[]);
 
     return (
     <div
@@ -67,9 +85,14 @@ const ChatSideBar = ({chats , activeChatId , setActiveChatId}) =>{
 
         {/* User Profile */}
         <div className="user-profile">
-            <div className="profile-avatar">You</div>
+            <Avatar
+                size={45}
+                src={userInfo.profilePicture}
+                icon={!userInfo?.profilePicture && <UserOutlined />}
+                className="profile-avatar"
+            />
             <div className="profile-info">
-                <div className="profile-name">Your Name</div>
+                <div className="profile-name">{ userInfo.username }</div>
                 <div className="profile-status">Online</div>
             </div>
             <div className="profile-settings">

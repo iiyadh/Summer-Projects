@@ -3,12 +3,14 @@ import "../../styles/Auth.css";
 import toast from 'react-hot-toast';
 import { Form, Input , Button ,Spin  } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
+import { useUserStore } from '../../store/userStore';
 
 
 
 
 const EditPassword = () => {
     const [loading , setLoading] = useState(false);
+    const { updatePassword } = useUserStore();
 
     const handleSubmit = async (values) => {
         const formData = values;
@@ -35,10 +37,22 @@ const EditPassword = () => {
         }
 
         setLoading(true);
-        setTimeout(() => {
+        try{
             setLoading(false);
-            console.log(data);
-        }, 2000);
+            await updatePassword(data.newPassword, data.oldPassword);
+            toast.success("Password updated successfully", {
+                duration: 2500,
+                removeDelay: 500,
+            });
+        }catch(err){
+            console.log(err);
+            toast.error(err.response?.data?.message || "Failed to update password", {
+                duration: 2500,
+                removeDelay: 500,
+            });
+        }finally{
+            setLoading(false);
+        }
     }
 
     return (

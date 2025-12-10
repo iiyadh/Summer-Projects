@@ -1,12 +1,19 @@
 import { useState } from "react"
 import "../styles/ManageFriends.css"
-import {  Input ,Dropdown ,Button  } from "antd"
+import {  Input ,Dropdown ,Button , Modal  } from "antd"
 import { StopOutlined, UserDeleteOutlined , MoreOutlined ,MessageOutlined} from '@ant-design/icons';
+import  AddFriend from "./PopupContent/AddFriend.jsx";
 
 
 const ManageFriends = () => {
     const [activeTab, setActiveTab] = useState("friends")
-    const [searchQuery, setSearchQuery] = useState("")
+    const [searchQuery, setSearchQuery] = useState("");
+    const [isPopupOpen, setIsPopupOpen] = useState(false);
+
+    
+    const handleCancel = () => {
+        setIsPopupOpen(false);
+    }
 
     // Sample data
     const [friends, setFriends] = useState([
@@ -123,9 +130,11 @@ const ManageFriends = () => {
                 <button className={`nav-tab ${activeTab === "add" ? "active" : ""}`} onClick={() => setActiveTab("add")}>
                     Requests
                 </button>
-                <button className="add-friend-btn" onClick={() => setActiveTab("add")}>
+                <Button 
+                    className="add-friend-btn"
+                    onClick={() => setIsPopupOpen(true)}>
                     Add Friend
-                </button>
+                </Button>
             </div>
 
             {/* Search */}
@@ -286,6 +295,13 @@ const ManageFriends = () => {
                     </div>
                 </>
             )}
+            <Modal 
+                open={isPopupOpen}
+                onCancel={handleCancel}
+                footer={null}
+            >
+                <AddFriend />
+            </Modal>
         </div>
     )
 
