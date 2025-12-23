@@ -449,3 +449,54 @@
         }
     }
 }
+
+
+
+.friends-list{
+    max-height: 400px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.friend-item{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    border: 1px solid #e1e5e9;
+    border-radius: 8px;
+    background-color: #fafafa;
+}
+
+.friend-avatar{
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.friend-username{
+    font-size: 16px;
+    font-weight: 500;
+    color: #333333;
+}
+
+.friend-info{
+    display: flex;
+    align-items: center;
+}
+
+
+.add-friend-button{
+    background-color: #03a6a1;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}

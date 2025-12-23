@@ -1,8 +1,9 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import "../styles/ManageFriends.css"
-import {  Input ,Dropdown ,Button , Modal  } from "antd"
-import { StopOutlined, UserDeleteOutlined , MoreOutlined ,MessageOutlined} from '@ant-design/icons';
-import  AddFriend from "./PopupContent/AddFriend.jsx";
+import { Input, Dropdown, Button, Modal, Avatar } from "antd"
+import { StopOutlined, UserDeleteOutlined, MoreOutlined, MessageOutlined, UserOutlined } from '@ant-design/icons';
+import AddFriend from "./PopupContent/AddFriend.jsx";
+import api from "../api/api";
 
 
 const ManageFriends = () => {
@@ -16,90 +17,122 @@ const ManageFriends = () => {
     }
 
     // Sample data
-    const [friends, setFriends] = useState([
-        { id: "1", username: "AhmedTN", avatar: "/placeholder.svg?height=40&width=40", isOnline: true, status: "friend" },
-        {
-            id: "2",
-            username: "EL_3OMDA69",
-            avatar: "/placeholder.svg?height=40&width=40",
-            isOnline: true,
-            status: "friend",
-        },
-        { id: "3", username: "GOTNIX", avatar: "/placeholder.svg?height=40&width=40", isOnline: true, status: "friend" },
-        { id: "4", username: "Sarah_K", avatar: "/placeholder.svg?height=40&width=40", isOnline: false, status: "friend" },
-        {
-            id: "5",
-            username: "BlockedUser",
-            avatar: "/placeholder.svg?height=40&width=40",
-            isOnline: false,
-            status: "blocked",
-        },
-    ])
+    const [friends, setFriends] = useState([]);
+    const [pendingRequests, setPendingRequests] = useState([]);
+    const [sentRequests, setSentRequests] = useState([]);
+    const [blockedFriendslist, setBlockedFriendslist] = useState([]);
 
-    const [pendingRequests, setPendingRequests] = useState ([
-        {
-            id: "6",
-            username: "NewUser123",
-            avatar: "/placeholder.svg?height=40&width=40",
-            isOnline: true,
-            status: "pending-received",
-        },
-        {
-            id: "7",
-            username: "GamerPro",
-            avatar: "/placeholder.svg?height=40&width=40",
-            isOnline: false,
-            status: "pending-received",
-        },
-    ])
 
-    const [sentRequests, setSentRequests] = useState ([
-        {
-            id: "8",
-            username: "PendingFriend",
-            avatar: "/placeholder.svg?height=40&width=40",
-            isOnline: true,
-            status: "pending-sent",
-        },
-    ])
-
-    const handleBlock = (friendId) => {
-        setFriends((prev) => prev.map((friend) => (friend.id === friendId ? { ...friend, status: "blocked" } : friend)))
-    }
-
-    const handleUnfriend = (friendId) => {
-        setFriends((prev) => prev.filter((friend) => friend.id !== friendId))
-    }
-
-    const handleUnblock = (friendId) => {
-        setFriends((prev) => prev.map((friend) => (friend.id === friendId ? { ...friend, status: "friend" } : friend)))
-    }
-
-    const handleAcceptRequest = (requestId) => {
-        const request = pendingRequests.find((req) => req.id === requestId)
-        if (request) {
-            setFriends((prev) => [...prev, { ...request, status: "friend" }])
-            setPendingRequests((prev) => prev.filter((req) => req.id !== requestId))
+    const fetchPendingRequests = async () => {
+        try {
+            const res = await api.get('/friends/friend-requests');
+            setPendingRequests(res.data);
+        } catch (err) {
+            console.error("Error fetching pending requests:", err);
         }
     }
 
-    const handleDeclineRequest = (requestId) => {
-        setPendingRequests((prev) => prev.filter((req) => req.id !== requestId))
+
+    const fetchSentRequests = async () => {
+        try {
+            const res = await api.get('/friends/sent-requests');
+            setSentRequests(res.data);
+        } catch (err) {
+            console.error("Error fetching sent requests:", err);
+        }
     }
 
-    const handleCancelRequest = (requestId) => {
-        setSentRequests((prev) => prev.filter((req) => req.id !== requestId))
+    const fetchFriends = async () => {
+        try {
+            const res = await api.get('/friends/friends');
+            setFriends(res.data || []);
+        } catch (err) {
+            console.error("Error fetching friends:", err);
+        }
     }
 
-    const activeFriends = friends.filter((friend) => friend.status === "friend")
-    const blockedFriends = friends.filter((friend) => friend.status === "blocked")
-    const onlineFriends = activeFriends.filter((friend) => friend.isOnline)
+    const fetchBlcokedFriends = async () => {
+        try {
+            const res = await api.get('/friends/blocked-users');
+            setBlockedFriendslist(res.data || []);
+        } catch (err) {
+            console.error("Error fetching blocked friends:", err);
+        }
+    };
 
-    const filteredFriends = activeFriends.filter((friend) =>
+
+    useEffect(() => {
+        fetchPendingRequests();
+        fetchSentRequests();
+        fetchFriends();
+        fetchBlcokedFriends();
+    }, []);
+
+    const handleBlock = async (friendId) => {
+        try {
+            await api.post(`/friends/block-friend`, { friendId });
+            setFriends((prev) => prev.filter((friend) => friend._id !== friendId));
+            setBlockedFriendslist((prev) => [...prev, friends.find((friend) => friend._id === friendId)]);
+        } catch (err) {
+            console.error("Error blocking friend:", err);
+        }
+    }
+
+    const handleUnfriend = async (friendId) => {
+        try {
+            console.log(friendId);
+            await api.post(`/friends/remove-friend/${friendId}`);
+            setFriends((prev) => prev.filter((friend) => friend._id !== friendId));
+        } catch (err) {
+            console.error("Error removing friend:", err);
+        }
+    }
+
+    const handleUnblock = async (friendId) => {
+        try {
+            await api.post(`/friends/unblock-friend`, { friendId });
+            setBlockedFriendslist((prev) => prev.filter((friend) => friend._id !== friendId));
+        } catch (err) {
+            console.error("Error unblocking friend:", err);
+        }
+    }
+
+    const handleAcceptRequest = async (requestId) => {
+        try {
+            await api.post(`/friends/accept-friend-request`, { requesterId: requestId });
+            const request = pendingRequests.find((req) => req._id === requestId);
+            if (request) {
+                setFriends((prev) => [...prev, { ...request, status: "active" }]);
+                setPendingRequests((prev) => prev.filter((req) => req._id !== requestId));
+            }
+        } catch (err) {
+            console.error("Error accepting friend request:", err);
+        }
+    }
+
+    const handleDeclineRequest = async (requestId) => {
+        try {
+            await api.post(`/friends/reject-friend-request`, { requesterId: requestId });
+            setPendingRequests((prev) => prev.filter((req) => req._id !== requestId));
+        } catch (err) {
+            console.error("Error declining friend request:", err);
+        }
+    }
+
+    const handleCancelRequest = async (requestId) => {
+        try {
+            await api.post(`/friends/deny-sent-request`, { recipientId: requestId });
+            setSentRequests((prev) => prev.filter((req) => req._id !== requestId));
+        } catch (err) {
+            console.error("Error cancelling friend request:", err);
+        }
+    }
+
+    const filteredFriends = friends.filter((friend) =>
         friend.username.toLowerCase().includes(searchQuery.toLowerCase()),
     )
 
-    const filteredBlocked = blockedFriends.filter((friend) =>
+    const filteredBlocked = blockedFriendslist.filter((friend) =>
         friend.username.toLowerCase().includes(searchQuery.toLowerCase()),
     )
 
@@ -138,62 +171,61 @@ const ManageFriends = () => {
             </div>
 
             {/* Search */}
-            {activeTab !== 'add' && <>
-                <div className="search-icon"></div>
-                    <Input.Search 
+            {activeTab !== 'add' && (
+                <Input.Search 
                     placeholder="Type name ..." 
                     variant="filled" 
                     className="search-input"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                 />
-            </>}
+            )}
+
             {/* Friends Tab */}
             {activeTab === "friends" && (
                 <>
-                    <div className="section-header">Online — {onlineFriends.length}</div>
+                    <div className="section-header">Friends — {filteredFriends.length}</div>
                     <div className="friends-list">
                         {filteredFriends.length === 0 ? (
                             <div className="empty-state">No friends found</div>
                         ) : (
-                            filteredFriends.map((friend) => (
-                                <div key={friend.id} className="friend-item">
-                                    <div className="avatar-container">
-                                        <img src={friend.avatar || "/placeholder.svg"} alt={friend.username} className="avatar" />
-                                        {friend.isOnline && <div className="online-indicator" />}
-                                    </div>
+                            filteredFriends.map((user) => (
+                                <div key={user._id} className="friend-item">
                                     <div className="friend-info">
-                                        <div className="username">{friend.username}</div>
+                                        <Avatar
+                                            className="friend-avatar"
+                                            src={user.profilePicture}
+                                            icon={!user?.profilePicture && <UserOutlined />}
+                                        />
+                                        <div className="friend-username">{user.username}</div>
                                     </div>
                                     <div className="friend-actions">
                                         <Button 
                                             type="text"
                                             className="action-btn"
                                             title="Send message"
-                                            icon={<MessageOutlined />}>
-                                            {/* <span className="message-icon"></span> */}
-                                        </Button>
+                                            icon={<MessageOutlined />}
+                                        />
                                         <div style={{ position: "relative" }}>
                                             <Dropdown menu={{ 
-                                                items : [
-
+                                                items: [
                                                     {
                                                         key: 'remove',
-                                                        label : "Remove Friend",
-                                                        icon : <UserDeleteOutlined />
+                                                        label: "Remove Friend",
+                                                        icon: <UserDeleteOutlined />
                                                     },                                                    
                                                     {
                                                         key: 'block',
-                                                        label : "Block",
-                                                        icon : <StopOutlined  style={{color:"red"}}/>
+                                                        label: "Block",
+                                                        icon: <StopOutlined style={{ color: "red" }} />
                                                     }
                                                 ],
-                                                onClick : ({key}) => {
-                                                    if (key === 'block') handleBlock(friend.id);
-                                                    else if (key === 'remove') handleUnfriend(friend.id);
+                                                onClick: ({ key }) => {
+                                                    if (key === 'block') handleBlock(user._id);
+                                                    else if (key === 'remove') handleUnfriend(user._id);
                                                 }
-                                             }} trigger={['click']}>
-                                                    <MoreOutlined style={{ rotate: "90deg" }} />
+                                            }} trigger={['click']}>
+                                                <MoreOutlined style={{ rotate: "90deg" }} />
                                             </Dropdown>
                                         </div>
                                     </div>
@@ -207,23 +239,25 @@ const ManageFriends = () => {
             {/* Blocked Tab */}
             {activeTab === "blocked" && (
                 <>
-                    <div className="section-header">Blocked — {blockedFriends.length}</div>
+                    <div className="section-header">Blocked — {blockedFriendslist.length}</div>
                     <div className="friends-list">
                         {filteredBlocked.length === 0 ? (
                             <div className="empty-state">No blocked users</div>
                         ) : (
                             filteredBlocked.map((friend) => (
-                                <div key={friend.id} className="friend-item">
-                                    <div className="avatar-container">
-                                        <img src={friend.avatar || "/placeholder.svg"} alt={friend.username} className="avatar" />
-                                    </div>
+                                <div key={friend._id} className="friend-item">
                                     <div className="friend-info">
+                                        <Avatar 
+                                            className="avatar-container"
+                                            size={43}
+                                            src={friend.profilePicture}
+                                        />
                                         <div className="username">{friend.username}</div>
                                     </div>
                                     <div className="friend-actions">
-                                        <button className="unblock-btn" onClick={() => handleUnblock(friend.id)}>
+                                        <Button className="unblock-btn" onClick={() => handleUnblock(friend._id)}>
                                             Unblock
-                                        </button>
+                                        </Button>
                                     </div>
                                 </div>
                             ))
@@ -236,30 +270,31 @@ const ManageFriends = () => {
             {activeTab === "add" && (
                 <>
                     {/* Pending Requests */}
-                    <div className="section-header">Pending Requests — {filteredPendingRequests.length}</div>
+                    <div className="section-header">Pending Requests — {pendingRequests.length}</div>
                     <div className="friends-list">
                         {filteredPendingRequests.length === 0 ? (
                             <div className="empty-state">No pending requests</div>
                         ) : (
                             filteredPendingRequests.map((request) => (
-                                <div key={request.id} className="friend-item">
-                                    <div className="avatar-container">
-                                        <img src={request.avatar || "/placeholder.svg"} alt={request.username} className="avatar" />
-                                        {request.isOnline && <div className="online-indicator" />}
-                                    </div>
+                                <div key={request._id} className="friend-item">
                                     <div className="friend-info">
+                                        <Avatar 
+                                            size={43}
+                                            className="avatar-container"
+                                            src={request.profilePicture}
+                                        />
                                         <div className="username">
                                             {request.username}
                                             <span className="pending-badge incoming">Incoming</span>
                                         </div>
                                     </div>
                                     <div className="request-actions">
-                                        <button className="accept-btn" onClick={() => handleAcceptRequest(request.id)} title="Accept">
+                                        <Button className="accept-btn" onClick={() => handleAcceptRequest(request._id)} title="Accept">
                                             <span className="check-icon"></span>
-                                        </button>
-                                        <button className="decline-btn" onClick={() => handleDeclineRequest(request.id)} title="Decline">
+                                        </Button>
+                                        <Button className="decline-btn" onClick={() => handleDeclineRequest(request._id)} title="Decline">
                                             <span className="x-icon"></span>
-                                        </button>
+                                        </Button>
                                     </div>
                                 </div>
                             ))
@@ -267,27 +302,28 @@ const ManageFriends = () => {
                     </div>
 
                     {/* Sent Requests */}
-                    <div className="section-header">Sent Requests — {filteredSentRequests.length}</div>
+                    <div className="section-header">Sent Requests — {sentRequests.length}</div>
                     <div className="friends-list">
                         {filteredSentRequests.length === 0 ? (
                             <div className="empty-state">No sent requests</div>
                         ) : (
                             filteredSentRequests.map((request) => (
-                                <div key={request.id} className="friend-item">
-                                    <div className="avatar-container">
-                                        <img src={request.avatar || "/placeholder.svg"} alt={request.username} className="avatar" />
-                                        {request.isOnline && <div className="online-indicator" />}
-                                    </div>
+                                <div key={request._id} className="friend-item">
                                     <div className="friend-info">
+                                        <Avatar 
+                                            size={43}
+                                            className="avatar-container"
+                                            src={request.profilePicture}
+                                        />
                                         <div className="username">
                                             {request.username}
                                             <span className="pending-badge outgoing">Outgoing</span>
                                         </div>
                                     </div>
                                     <div className="friend-actions">
-                                        <button className="cancel-btn" onClick={() => handleCancelRequest(request.id)}>
+                                        <Button className="cancel-btn" onClick={() => handleCancelRequest(request._id)}>
                                             Cancel
-                                        </button>
+                                        </Button>
                                     </div>
                                 </div>
                             ))
@@ -296,14 +332,15 @@ const ManageFriends = () => {
                 </>
             )}
             <Modal 
+                title="Add Friend"
                 open={isPopupOpen}
                 onCancel={handleCancel}
                 footer={null}
             >
-                <AddFriend />
+                <AddFriend setSentRequests={setSentRequests} />
             </Modal>
         </div>
     )
-
 }
+
 export default ManageFriends;

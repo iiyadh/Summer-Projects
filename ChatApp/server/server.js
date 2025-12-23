@@ -29,6 +29,7 @@ app.use(cookieParser());
 app.use('/api/auth', require('./routes/authRoute'));
 app.use('/api/recovery', require('./routes/passwordRoute'));
 app.use('/api/user', require('./routes/userRoute'));
+app.use('/api/friends', require('./routes/friendsRoute'));
 
 server.listen(process.env.PORT,()=>{
     console.log('Server is running on port ' + process.env.PORT);
