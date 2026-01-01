@@ -516,3 +516,49 @@
 
   
 }
+
+.message-edit-area {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  border: 1px solid #e0e0e0;
+
+  .save-edit-btn,
+  .cancel-edit-btn {
+    padding: 8px 16px;
+    margin: 0;
+    border: none;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .save-edit-btn {
+    background-color: #03a6a1;
+    color: #ffffff;
+  }
+
+  .save-edit-btn:hover {
+    background-color: #028a86;
+  }
+
+  .cancel-edit-btn {
+    background-color: #eeeeee;
+    color: #666666;
+  }
+
+  .cancel-edit-btn:hover {
+    background-color: #e0e0e0;
+    color: #333333;
+  }
+  .edit-message-actions{
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+  }
+}

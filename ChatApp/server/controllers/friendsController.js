@@ -65,19 +65,21 @@ const addFriend = async (req, res) => {
 
 const acceptFriendRequest = async (req, res) => {
     const userId = req.userId;
-    const { requesterId } = req.body;
+    const { requestId } = req.body;
+
+    console.log(userId, requestId);
     try {
         const currentUser = await User.findById(userId);
-        const requesterUser = await User.findById(requesterId);
+        const requesterUser = await User.findById(requestId);
         if (!currentUser || !requesterUser) {
             return res.status(404).json({ message: 'User not found' });
         }
-        if (!currentUser.friendsRequests.includes(requesterId)) {
+        if (!currentUser.friendsRequests.includes(requestId)) {
             return res.status(400).json({ message: 'No friend request from this user' });
         }
-        currentUser.friends.push(requesterId);
+        currentUser.friends.push(requestId);
         requesterUser.friends.push(userId);
-        currentUser.friendsRequests = currentUser.friendsRequests.filter(id => id.toString() !== requesterId);
+        currentUser.friendsRequests = currentUser.friendsRequests.filter(id => id.toString() !== requestId);
         requesterUser.sentRequests = requesterUser.sentRequests.filter(id => id.toString() !== userId);
         await currentUser.save();
         await requesterUser.save();
@@ -91,17 +93,21 @@ const acceptFriendRequest = async (req, res) => {
 
 const rejectFriendRequest = async (req, res) => {
     const userId = req.userId;
-    const { requesterId } = req.body;
+    
+    const { requestId } = req.body;
+
+
+    console.log(userId, requestId);
     try {
         const currentUser = await User.findById(userId);
-        const requesterUser = await User.findById(requesterId);
+        const requesterUser = await User.findById(requestId);
         if (!currentUser || !requesterUser) {
             return res.status(404).json({ message: 'User not found' });
         }
-        if (!currentUser.friendsRequests.includes(requesterId)) {
+        if (!currentUser.friendsRequests.includes(requestId)) {
             return res.status(400).json({ message: 'No friend request from this user' });
         }
-        currentUser.friendsRequests = currentUser.friendsRequests.filter(id => id.toString() !== requesterId);
+        currentUser.friendsRequests = currentUser.friendsRequests.filter(id => id.toString() !== requestId);
         requesterUser.sentRequests = requesterUser.sentRequests.filter(id => id.toString() !== userId);
         await currentUser.save();
         await requesterUser.save();
@@ -114,17 +120,17 @@ const rejectFriendRequest = async (req, res) => {
 
 const denySentRequest = async (req, res) => {
     const userId = req.userId;
-    const { recipientId } = req.body;
+    const { requestId } = req.body;
     try {
         const currentUser = await User.findById(userId);
-        const recipientUser = await User.findById(recipientId);
+        const recipientUser = await User.findById(requestId);
         if (!currentUser || !recipientUser) {
             return res.status(404).json({ message: 'User not found' });
         }
-        if (!currentUser.sentRequests.includes(recipientId)) {
+        if (!currentUser.sentRequests.includes(requestId)) {
             return res.status(400).json({ message: 'No sent request to this user' });
         }
-        currentUser.sentRequests = currentUser.sentRequests.filter(id => id.toString() !== recipientId);
+        currentUser.sentRequests = currentUser.sentRequests.filter(id => id.toString() !== requestId);
         recipientUser.friendsRequests = recipientUser.friendsRequests.filter(id => id.toString() !== userId);
         await currentUser.save();
         await recipientUser.save();

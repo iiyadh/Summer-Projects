@@ -3,10 +3,10 @@ import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { SettingFilled , UserOutlined } from '@ant-design/icons';
 import { useUserStore } from '../store/userStore';
-import { Avatar } from 'antd';
+import { Avatar, Spin } from 'antd';
 import { useEffect } from 'react';
 
-const ChatSideBar = ({chats , activeChatId , setActiveChatId}) =>{
+const ChatSideBar = ({chats , activeChatId , setActiveChatId, loading}) =>{
     const [width, setWidth] = useState(500);
     const sidebarRef = useRef(null);
     const isResizing = useRef(false);
@@ -68,19 +68,29 @@ const ChatSideBar = ({chats , activeChatId , setActiveChatId}) =>{
 
         <div className="chat-list">
             <p className='dm'>Direct Messages</p>
-            {chats.map((chat) => (
-                <div
-                    key={chat.id}
-                    className={`chat-item ${chat.id === activeChatId ? 'active' : ''}`}
-                    onClick={()=>handleSelectChat(chat.id)}
-                >
-                    <div className="chat-avatar">{chat.avatar}</div>
-                    <div className="chat-info">
-                        <div className="chat-name">{chat.name}</div>
-                    </div>
-                    <div className="chat-meta">{chat.unread > 0 && <div className="unread-badge">{chat.unread}</div>}</div>
+            {loading ? (
+                <div style={{ display: 'flex', justifyContent: 'center', padding: '20px' }}>
+                    <Spin />
                 </div>
-            ))}
+            ) : chats.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '20px', color: '#888' }}>
+                    No chats yet. Start a conversation!
+                </div>
+            ) : (
+                chats.map((chat) => (
+                    <div
+                        key={chat.id}
+                        className={`chat-item ${chat.id === activeChatId ? 'active' : ''}`}
+                        onClick={()=>handleSelectChat(chat.id)}
+                    >
+                        <div className="chat-avatar">{chat.avatar}</div>
+                        <div className="chat-info">
+                            <div className="chat-name">{chat.name}</div>
+                        </div>
+                        <div className="chat-meta">{chat.unread > 0 && <div className="unread-badge">{chat.unread}</div>}</div>
+                    </div>
+                ))
+            )}
         </div>
 
         {/* User Profile */}

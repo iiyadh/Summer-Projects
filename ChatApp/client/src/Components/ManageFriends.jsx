@@ -1,15 +1,19 @@
 import { useEffect, useState } from "react"
 import "../styles/ManageFriends.css"
-import { Input, Dropdown, Button, Modal, Avatar } from "antd"
+import { Input, Dropdown, Button, Modal, Avatar, message } from "antd"
 import { StopOutlined, UserDeleteOutlined, MoreOutlined, MessageOutlined, UserOutlined } from '@ant-design/icons';
 import AddFriend from "./PopupContent/AddFriend.jsx";
 import api from "../api/api";
+import { useNavigate , useOutletContext} from "react-router-dom";
 
 
 const ManageFriends = () => {
     const [activeTab, setActiveTab] = useState("friends")
     const [searchQuery, setSearchQuery] = useState("");
     const [isPopupOpen, setIsPopupOpen] = useState(false);
+    const navigate = useNavigate();
+    const setChats = useOutletContext();
+
 
     
     const handleCancel = () => {
@@ -99,32 +103,56 @@ const ManageFriends = () => {
 
     const handleAcceptRequest = async (requestId) => {
         try {
-            await api.post(`/friends/accept-friend-request`, { requesterId: requestId });
-            const request = pendingRequests.find((req) => req._id === requestId);
-            if (request) {
-                setFriends((prev) => [...prev, { ...request, status: "active" }]);
-                setPendingRequests((prev) => prev.filter((req) => req._id !== requestId));
-            }
+            await api.post('/friends/accept-friend-request', { requestId });
+            setPendingRequests((prev) => prev.filter((request) => request._id !== requestId));
+            fetchFriends();
         } catch (err) {
-            console.error("Error accepting friend request:", err);
+            console.error("Error accepting request:", err);
         }
     }
 
-    const handleDeclineRequest = async (requestId) => {
+    const handleRejectRequest = async (requestId) => {
         try {
-            await api.post(`/friends/reject-friend-request`, { requesterId: requestId });
-            setPendingRequests((prev) => prev.filter((req) => req._id !== requestId));
+            await api.post('/friends/reject-friend-request', { requestId });
+            setPendingRequests((prev) => prev.filter((request) => request._id !== requestId));
         } catch (err) {
-            console.error("Error declining friend request:", err);
+            console.error("Error rejecting request:", err);
         }
     }
 
     const handleCancelRequest = async (requestId) => {
         try {
-            await api.post(`/friends/deny-sent-request`, { recipientId: requestId });
-            setSentRequests((prev) => prev.filter((req) => req._id !== requestId));
+            await api.post('/friends/deny-sent-request', { requestId });
+            setSentRequests((prev) => prev.filter((request) => request._id !== requestId));
         } catch (err) {
-            console.error("Error cancelling friend request:", err);
+            console.error("Error cancelling request:", err);
+        }
+    }
+
+    const handleChat = async (friendId) => {
+        try {
+            const response = await api.post('/chats/create-chat', {
+                participantId: friendId
+            });
+            
+            if (response.data._id) {
+                navigate(`/chat/${response.data._id}`);
+            }
+
+            setChats((prevChats) => [...prevChats, {
+                id: response.data._id,
+                name: response.data.title,
+                unread: 0, 
+                avatar: response.data.title.split(',').map(name => name.trim().split(' ').map(n => n[0]).join('')).join(''),
+                participants: response.data.participants
+            }]);
+        } catch (err) {
+            if (err.response?.status === 400 && err.response?.data?.chatId) {
+                navigate(`/chat/${err.response.data.chatId}`);
+            } else {
+                console.error("Error creating chat:", err);
+                message.error("Failed to create chat");
+            }
         }
     }
 
@@ -205,6 +233,7 @@ const ManageFriends = () => {
                                             className="action-btn"
                                             title="Send message"
                                             icon={<MessageOutlined />}
+                                            onClick={() => handleChat(user._id)}
                                         />
                                         <div style={{ position: "relative" }}>
                                             <Dropdown menu={{ 
@@ -292,7 +321,7 @@ const ManageFriends = () => {
                                         <Button className="accept-btn" onClick={() => handleAcceptRequest(request._id)} title="Accept">
                                             <span className="check-icon"></span>
                                         </Button>
-                                        <Button className="decline-btn" onClick={() => handleDeclineRequest(request._id)} title="Decline">
+                                        <Button className="decline-btn" onClick={() => handleRejectRequest(request._id)} title="Decline">
                                             <span className="x-icon"></span>
                                         </Button>
                                     </div>

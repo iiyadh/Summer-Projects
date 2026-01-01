@@ -27,11 +27,6 @@ const messageSchema = new mongoose.Schema({
         ref: 'User',
         required: true
     },
-    chatRoom:{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Chat',
-        required: true
-    },
     content: {
         type: String,
         required: true
