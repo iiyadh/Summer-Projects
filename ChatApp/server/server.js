@@ -2,17 +2,51 @@ const express = require('express');
 const http = require('http');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
+const compression = require('compression');
+const morgan = require('morgan');
 const WebSocket = require('ws');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
-require('mongoose').connect(process.env.DB_URL).then(()=>{
-    console.log('Connected to MongoDB');
-})
+const mongoose = require('mongoose');
+const { notFound, errorHandler } = require('./middlewares/errorHandler');
+
+mongoose
+    .connect(process.env.DB_URL)
+    .then(() => {
+        console.log('Connected to MongoDB');
+    })
+    .catch((err) => {
+        console.error('Failed to connect to MongoDB:', err);
+        process.exit(1);
+    });
 
 const app  = express();
 const server = http.createServer(app);
-const wss = new WebSocket.Server({server});
+const wss = new WebSocket.Server({ server, maxPayload: 1024 * 1024 });
 const clients = new Map();
+
+app.set('trust proxy', 1);
+app.disable('x-powered-by');
+
+if (process.env.NODE_ENV !== 'production') {
+    app.use(morgan('dev'));
+} else {
+    app.use(morgan('combined'));
+}
+
+app.use(helmet());
+app.use(compression());
+
+app.use(
+    rateLimit({
+        windowMs: 15 * 60 * 1000,
+        limit: Number(process.env.RATE_LIMIT_MAX || 300),
+        standardHeaders: 'draft-7',
+        legacyHeaders: false,
+    })
+);
 
 app.use(cors({
     origin: process.env.FRONTEND_URL || 'http://localhost:5173',
@@ -24,7 +58,8 @@ app.use(cors({
     optionsSuccessStatus: 204
 }))
 
-app.use(express.json());
+app.use(express.json({ limit: '1mb' }));
+app.use(express.urlencoded({ extended: false, limit: '1mb' }));
 app.use(cookieParser());
 
 
@@ -33,6 +68,9 @@ app.use('/api/recovery', require('./routes/passwordRoute'));
 app.use('/api/user', require('./routes/userRoute'));
 app.use('/api/friends', require('./routes/friendsRoute'));
 app.use('/api/chats', require('./routes/chatsRoutes'));
+
+app.use(notFound);
+app.use(errorHandler);
 
 // WebSocket connection handler
 wss.on('connection', (ws, req) => {
@@ -165,6 +203,7 @@ function broadcastUserStatus(userId, status) {
     });
 }
 
-server.listen(process.env.PORT,()=>{
-    console.log('Server is running on port ' + process.env.PORT);
-})
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => {
+    console.log('Server is running on port ' + PORT);
+});

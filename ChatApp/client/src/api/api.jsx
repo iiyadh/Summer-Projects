@@ -31,13 +31,25 @@ api.interceptors.request.use(config => {
 api.interceptors.response.use(
   response => response,
   async error => {
-    const originalRequest = error.config;
-    if (error?.response?.status === 403 && !originalRequest._retry){
+    const originalRequest = error?.config;
+    if (!originalRequest) return Promise.reject(error);
+
+    const status = error?.response?.status;
+    const isAuthRefresh = typeof originalRequest.url === 'string' && originalRequest.url.includes('/auth/refresh');
+
+    if ((status === 401 || status === 403) && !originalRequest._retry && !isAuthRefresh) {
       originalRequest._retry = true;
-      const { data } = await axios.post('http://localhost:3000/api/auth/refresh');
-      originalRequest.headers['Authorization'] = `Bearer ${data.token}`;
-      useAuthStore.getState().setToken(data.token);
-      return api(originalRequest);
+      try {
+        const { data } = await api.post('/auth/refresh');
+        if (data?.token) {
+          originalRequest.headers = originalRequest.headers || {};
+          originalRequest.headers['Authorization'] = `Bearer ${data.token}`;
+          useAuthStore.getState().setToken(data.token);
+          return api(originalRequest);
+        }
+      } catch (refreshErr) {
+        return Promise.reject(refreshErr);
+      }
     }
     return Promise.reject(error);
   }

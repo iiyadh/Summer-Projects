@@ -9,10 +9,11 @@ class WebSocketService {
     }
 
     connect(token) {
+        const isDev = Boolean(import.meta.env?.DEV);
         const wsUrl = import.meta.env.VITE_WS_URL || 'ws://localhost:3000';
         this.ws = new WebSocket(wsUrl);
         this.ws.onopen = () => {
-            console.log('WebSocket connected');
+            if (isDev) console.log('WebSocket connected');
             this.reconnectAttempts = 0;
             this.send({
                 type: 'authenticate',
@@ -25,7 +26,7 @@ class WebSocketService {
                 const data = JSON.parse(event.data);
                 if (data.type === 'authenticated' && data.success) {
                     this.isAuthenticated = true;
-                    console.log('WebSocket authenticated');
+                    if (isDev) console.log('WebSocket authenticated');
                 }
                 const handlers = this.messageHandlers.get(data.type) || [];
                 handlers.forEach(handler => handler(data));
@@ -36,7 +37,7 @@ class WebSocketService {
         };
 
         this.ws.onclose = () => {
-            console.log('WebSocket disconnected');
+            if (isDev) console.log('WebSocket disconnected');
             this.isAuthenticated = false;
             this.attemptReconnect(token);
         };
@@ -47,9 +48,10 @@ class WebSocketService {
     }
 
     attemptReconnect(token) {
+        const isDev = Boolean(import.meta.env?.DEV);
         if (this.reconnectAttempts < this.maxReconnectAttempts) {
             this.reconnectAttempts++;
-            console.log(`Reconnecting... Attempt ${this.reconnectAttempts}`);
+            if (isDev) console.log(`Reconnecting... Attempt ${this.reconnectAttempts}`);
             setTimeout(() => this.connect(token), this.reconnectDelay);
         } else {
             console.error('Max reconnection attempts reached');
@@ -65,13 +67,14 @@ class WebSocketService {
     }
 
     sendMessage(chatId, content, participants) {
+        const isDev = Boolean(import.meta.env?.DEV);
         this.send({
             type: 'message',
             chatId,
             content,
             participants
         });
-        console.log(`User ${participants} sent message to chat ${chatId}`);
+        if (isDev) console.log(`Sent message to chat ${chatId}`);
     }
 
     sendTyping(chatId, participants, isTyping) {

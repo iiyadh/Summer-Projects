@@ -172,4 +172,33 @@ const deleteMessage = async (req, res) => {
     }
 };
 
-module.exports = { createChat1_1, getChats, getMessages , sendMessage , editMessage, deleteMessage };
+const fetchFriends = async (req,res) => {
+    try{
+        const user = await User.findById(req.userId).populate('friends', 'username profilePicture');
+        return res.status(200).json(user.friends);
+    }
+    catch(err){
+        return res.status(500).json({ error: 'Server error' });
+    }
+};
+
+const createGroupChat = async (req, res) => {
+    const userId = req.userId;
+    const { participantIds } = req.body;
+    try {
+        if (!participantIds || participantIds.length < 2) {
+            return res.status(400).json({ error: 'At least two participants are required to create a group chat' });
+        }
+        const participants = [userId, ...participantIds];
+        const newChat = new Chat({
+            title: req.body.title || 'Group Chat',
+            participants: participants
+        });
+        await newChat.save();
+        return res.status(201).json(newChat);
+    }catch(err){
+        return res.status(500).json({ error: 'Server error' });
+    }
+};
+
+module.exports = { createChat1_1, getChats, getMessages , sendMessage , editMessage, deleteMessage , createGroupChat ,fetchFriends};

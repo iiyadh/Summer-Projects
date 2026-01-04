@@ -1,12 +1,16 @@
 import '../styles/Chat.css';
 import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
-import { Upload, Form, Input, Button, Dropdown, Avatar } from 'antd';
+import { Upload, Form, Input, Button, Dropdown, Avatar, Modal, Select } from 'antd';
 import { PhoneOutlined ,InfoCircleOutlined , PlusOutlined ,SendOutlined ,SmileFilled ,DeleteOutlined , MoreOutlined } from '@ant-design/icons';
 import EmojiPicker from 'emoji-picker-react';
 import websocketService from '../services/websocket';
 import { useAuthStore } from '../store/authStore';
 import api from '../api/api';
+import { useNavigate, useOutletContext } from 'react-router-dom';
+
+
+const { Option } = Select;
 
 const ChatHistory = ()=>{
 
@@ -22,6 +26,13 @@ const ChatHistory = ()=>{
     const [toeditMessageId, setToeditMessageId] = useState(null);
     const [userMap, setUserMap] = useState({});
     const [editMessageText, setEditMessageText] = useState("");
+    const [modalVisible, setModalVisible] = useState(false);
+    const [friendslist, setFriendslist] = useState([]);
+    const [selectedFriends, setSelectedFriends] = useState([]);
+    const navigate = useNavigate();
+    const setChats = useOutletContext();
+    const [chatInfoModalVisible, setChatInfoModalVisible] = useState(false);
+    
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [messages]);
@@ -29,6 +40,7 @@ const ChatHistory = ()=>{
         if (chatId) {
             fetchMessages();
             fetchChatInfo();
+            fetchFriends();
         }
     }, [chatId]);
 
@@ -205,6 +217,32 @@ const ChatHistory = ()=>{
             console.error('Error deleting message:', err);
         }
     };
+    
+    const fetchFriends = async () => {
+        try {
+            const res = await api.get('/chats/friends');
+            setFriendslist(res.data);
+        }catch(err){
+            console.error('Error fetching friends:', err);
+        }
+    };
+
+    const handleCreateGroupChat = async (selectedUserIds) => {
+        try{
+            const res = await api.post('/chats/create-group-chat', { participantIds : selectedUserIds });
+            setChats(prevChats => [...prevChats, {
+                id: res.data._id,
+                name: res.data.title,
+                unread: 0,
+                avatar: res.data.title.split(',').map(name => name.trim().split(' ').map(n => n[0]).join('')).join(''),
+                participants: res.data.participants
+            }]);
+            navigate(`/chat/${res.data._id}`);
+        }catch(err){
+            console.error('Error creating group chat:', err);
+        }
+    }
+
 
     const [emojiPickerVisible, setEmojiPickerVisible] = useState(false);
 
@@ -221,8 +259,98 @@ const ChatHistory = ()=>{
                 </div>
                 <div className="chat-actions">
                     <PhoneOutlined className="action-btn" />
-                    <InfoCircleOutlined className="action-btn"/>
+                    <Button type='text'
+                        icon={<InfoCircleOutlined />}
+                        onClick={() => setChatInfoModalVisible(true)}
+                    >
+                    </Button>
+                    <Button type='text'
+                        icon={<PlusOutlined />} 
+                        onClick={()=>{
+                        setModalVisible(true);
+                    }}></Button>
                 </div>
+                <Modal
+                    title="Add Participants"
+                    open={modalVisible}
+                    onCancel={() => setModalVisible(false)}
+                    footer={[
+                        <Button key="cancel" onClick={() => setModalVisible(false)}>
+                            Cancel
+                        </Button>,
+                        <Button key="add" type="primary" onClick={() => {
+                            handleCreateGroupChat(selectedFriends);
+                            setModalVisible(false);
+                        }}>
+                            Add
+                        </Button>
+                    ]}
+                    width={500}
+                >
+                    <Select
+                        mode="multiple"
+                        placeholder="Search and select friends to add"
+                        style={{ width: '100%' }}
+                        size="large"
+                        showSearch
+                        value={selectedFriends}
+                        filterOption={(input, option) =>
+                            String(option?.label || '')
+                                .toLowerCase()
+                                .includes(input.toLowerCase())
+                        }
+                        optionLabelProp="label"
+                        onChange={(value) => setSelectedFriends(value)}
+                    >
+                        {friendslist.map(user => (
+                            <Option 
+                                key={user._id} 
+                                value={user._id}
+                                label={user.username}
+                            >
+                                <div style={{ display: 'flex', alignItems: 'center', padding: '4px 0' }}>
+                                    <Avatar 
+                                        src={user.profilePicture} 
+                                        size={32}
+                                        style={{ marginRight: '12px', flexShrink: 0 }}
+                                    >
+                                        {user.username[0]}
+                                    </Avatar>
+                                    <span style={{ fontSize: '14px', fontWeight: '500' }}>
+                                        {user.username}
+                                    </span>
+                                </div>
+                            </Option>
+                        ))}
+                    </Select>
+                </Modal>
+
+
+                <Modal
+                    title="Chat Information"
+                    open={chatInfoModalVisible}
+                    onCancel={() => setChatInfoModalVisible(false)}
+                    footer={null}
+                    width={400}
+                >
+                    <h3>Participants:</h3>
+                    <ul>
+                        {chatInfo.participants.map(participantId => (
+                            <li key={participantId} style={{ marginBottom: '8px', display: 'flex', alignItems: 'center' }}>
+                                <Avatar 
+                                    src={userMap[participantId]?.profilePicture} 
+                                    size={32}
+                                    style={{ marginRight: '12px', flexShrink: 0 }}
+                                >
+                                    {userMap[participantId]?.username[0]}
+                                </Avatar>
+                                <span style={{ fontSize: '14px', fontWeight: '500' }}>
+                                    {userMap[participantId]?.username || 'Unknown User'}
+                                </span>
+                            </li>
+                        ))}
+                    </ul>
+                </Modal>
             </div>
 
             {/* Messages */}
@@ -251,7 +379,7 @@ const ChatHistory = ()=>{
                                 </div>
                             </div>
                         }
-                            {msg.isOwn && 
+                            {true && 
                             <Dropdown
                                 menu={{items: [
                                     {
@@ -316,7 +444,6 @@ const ChatHistory = ()=>{
                         fileList={fileList}
                         onChange={({fileList}) => {
                             setFileList(fileList);
-                            console.log(fileList);
                         }}
                         itemRender={() => null}
                         >
@@ -353,7 +480,7 @@ const ChatHistory = ()=>{
                         disabled={!message.trim() && fileList.length === 0}>
                     </Button>
                 </Form>
-
+                
             </div>
         </div>
     )

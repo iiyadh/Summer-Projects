@@ -5,6 +5,7 @@ import { StopOutlined, UserDeleteOutlined, MoreOutlined, MessageOutlined, UserOu
 import AddFriend from "./PopupContent/AddFriend.jsx";
 import api from "../api/api";
 import { useNavigate , useOutletContext} from "react-router-dom";
+import websocketService from "../services/websocket";
 
 
 const ManageFriends = () => {
@@ -70,6 +71,25 @@ const ManageFriends = () => {
         fetchSentRequests();
         fetchFriends();
         fetchBlcokedFriends();
+
+        // Listen for user status updates
+        const handleUserStatus = (data) => {
+            const { userId, status } = data;
+            setFriends((prevFriends) => 
+                prevFriends.map((friend) => 
+                    friend._id === userId 
+                        ? { ...friend, status } 
+                        : friend
+                )
+            );
+        };
+
+        websocketService.on('user_status', handleUserStatus);
+
+        // Cleanup listener on unmount
+        return () => {
+            websocketService.off('user_status', handleUserStatus);
+        };
     }, []);
 
     const handleBlock = async (friendId) => {
@@ -84,7 +104,6 @@ const ManageFriends = () => {
 
     const handleUnfriend = async (friendId) => {
         try {
-            console.log(friendId);
             await api.post(`/friends/remove-friend/${friendId}`);
             setFriends((prev) => prev.filter((friend) => friend._id !== friendId));
         } catch (err) {
@@ -226,6 +245,10 @@ const ManageFriends = () => {
                                             icon={!user?.profilePicture && <UserOutlined />}
                                         />
                                         <div className="friend-username">{user.username}</div>
+                                        <div className={`friend-status ${user.status === 'online' ? 'status-online' : 'status-offline'}`}>
+                                            <span className="status-indicator"></span>
+                                            {user.status === 'online' ? 'Online' : 'Offline'}
+                                        </div>
                                     </div>
                                     <div className="friend-actions">
                                         <Button 

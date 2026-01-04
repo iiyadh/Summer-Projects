@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { createChat1_1, getChats, getMessages , sendMessage , editMessage, deleteMessage } = require('../controllers/chatController');
+const { createChat1_1, getChats, getMessages , sendMessage , editMessage, deleteMessage , createGroupChat ,fetchFriends } = require('../controllers/chatController');
 const { authenticateToken , validateUID } = require('../middlewares/auth');
 
 
@@ -9,6 +9,8 @@ router.get('/messages/:chatId', authenticateToken, validateUID, getMessages);
 router.post('/send-message', authenticateToken, validateUID, sendMessage);
 router.put('/edit-message/:messageId', authenticateToken, validateUID, editMessage);
 router.delete('/delete-message/:messageId', authenticateToken, validateUID, deleteMessage);
+router.post('/create-group-chat', authenticateToken, validateUID, createGroupChat);
+router.get('/friends', authenticateToken, validateUID, fetchFriends);
 
 
 module.exports = router;
