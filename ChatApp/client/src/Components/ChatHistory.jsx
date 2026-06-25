@@ -23,6 +23,7 @@ const ChatHistory = ()=>{
     const [chatInfo, setChatInfo] = useState({ participants: [], title: '' });
     const [typingTimeout, setTypingTimeout] = useState(null);
     const messagesEndRef = useRef(null);
+    const messagesContainerRef = useRef(null);
     const [toeditMessageId, setToeditMessageId] = useState(null);
     const [userMap, setUserMap] = useState({});
     const [editMessageText, setEditMessageText] = useState("");
@@ -32,17 +33,38 @@ const ChatHistory = ()=>{
     const navigate = useNavigate();
     const setChats = useOutletContext();
     const [chatInfoModalVisible, setChatInfoModalVisible] = useState(false);
+    const [pagination, setPagination] = useState({ page: 1, hasMore: true, loading: false });
     
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [messages]);
     useEffect(() => {
         if (chatId) {
-            fetchMessages();
+            setMessages([]);
+            setPagination({ page: 1, hasMore: true, loading: false });
+            fetchMessages(1, true);
             fetchChatInfo();
             fetchFriends();
         }
     }, [chatId]);
+
+    const loadMoreMessages = () => {
+        if (pagination.hasMore && !pagination.loading) {
+            fetchMessages(pagination.page + 1, false);
+        }
+    };
+
+    useEffect(() => {
+        const container = messagesContainerRef.current;
+        if (!container) return;
+        const handleScroll = () => {
+            if (container.scrollTop < 50 && pagination.hasMore && !pagination.loading) {
+                loadMoreMessages();
+            }
+        };
+        container.addEventListener('scroll', handleScroll);
+        return () => container.removeEventListener('scroll', handleScroll);
+    }, [pagination]);
 
     useEffect(() => {
         const handleNewMessage = (data) => {
@@ -80,16 +102,20 @@ const ChatHistory = ()=>{
         };
     }, [chatId, uid, userMap]);
 
-    const fetchMessages = async () => {
+    const fetchMessages = async (page = 1, reset = false) => {
+        if (pagination.loading) return;
+        setPagination(prev => ({ ...prev, loading: true }));
         try {
-            const response = await api.get(`/chats/messages/${chatId}`, {
+            const response = await api.get(`/chats/messages/${chatId}?page=${page}&limit=50`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
             });
             
+            const { messages: rawMessages, pagination: pag } = response.data;
+            
             const userMapping = {};
-            const formattedMessages = response.data.map((msg) => {
+            const formattedMessages = rawMessages.map((msg) => {
                 userMapping[msg.sender._id] = {
                     username: msg.sender.username,
                     profilePicture: msg.sender.profilePicture
@@ -104,10 +130,12 @@ const ChatHistory = ()=>{
                 };
             });
             
-            setUserMap(userMapping);
-            setMessages(formattedMessages);
+            setUserMap(prev => ({ ...prev, ...userMapping }));
+            setMessages(prev => reset ? formattedMessages : [...formattedMessages, ...prev]);
+            setPagination({ page, hasMore: pag.hasMore, loading: false });
         } catch (error) {
             console.error('Error fetching messages:', error);
+            setPagination(prev => ({ ...prev, loading: false }));
         }
     };
 
@@ -354,7 +382,10 @@ const ChatHistory = ()=>{
             </div>
 
             {/* Messages */}
-            <div className="messages-container">
+            <div className="messages-container" ref={messagesContainerRef}>
+                {pagination.loading && messages.length > 0 && (
+                    <div style={{ textAlign: 'center', padding: '8px', color: '#888' }}>Loading older messages...</div>
+                )}
                 {messages.map((msg) => (
                     <div key={msg.id} className={`message ${msg.isOwn ? "own" : ""}`}>
                         {!msg.isOwn && (

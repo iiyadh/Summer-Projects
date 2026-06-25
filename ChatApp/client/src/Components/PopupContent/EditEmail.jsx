@@ -81,7 +81,7 @@ const EditEmail = ( {setUserInfo} ) => {
         {!verfied && <div className="generic-container">
             <div className="auth-header">
                 <h1>Change E-mail</h1>
-                <p>We have sent code with 4 degits on your email tabaiiyadh317@gmail.com</p>
+                <p>We have sent a 4-digit code to your email</p>
             </div>
             <Form className="auth-form">
                 <div className="form-group">

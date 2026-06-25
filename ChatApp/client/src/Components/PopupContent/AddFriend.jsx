@@ -1,4 +1,5 @@
 import { Avatar, Button, Form , Input} from "antd";
+import { UserOutlined } from '@ant-design/icons';
 import { useState } from "react";
 import "../../styles/ManageFriends.css";
 import api from "../../api/api";

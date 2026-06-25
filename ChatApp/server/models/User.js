@@ -60,6 +60,12 @@ const userSchema = new mongoose.Schema({
     }],
 });
 
+userSchema.index({ email: 1 }, { unique: true });
+userSchema.index({ username: 1 });
+userSchema.index({ friends: 1 });
+userSchema.index({ friendsRequests: 1 });
+userSchema.index({ sentRequests: 1 });
+
 const User = mongoose.model('User', userSchema);
 
 module.exports = User;

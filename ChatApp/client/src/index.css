@@ -1,0 +1,138 @@
+:root {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f0f0f0;
+  --bg-tertiary: #eeeeee;
+  --text-primary: #333333;
+  --text-secondary: #666666;
+  --border-color: #eeeeee;
+  --accent-color: #03a6a1;
+  --hover-bg: #e8e8e8;
+  --card-bg: #ffffff;
+  --input-bg: #ffffff;
+  --shadow-color: rgba(0, 0, 0, 0.05);
+  --message-own-bg: #03a6a1;
+  --message-other-bg: #ffffff;
+}
+
+[data-theme="dark"] {
+  --bg-primary: #1a1a2e;
+  --bg-secondary: #16213e;
+  --bg-tertiary: #0f3460;
+  --text-primary: #e0e0e0;
+  --text-secondary: #a0a0a0;
+  --border-color: #2a2a4a;
+  --accent-color: #53d8d4;
+  --hover-bg: #1a1a3e;
+  --card-bg: #16213e;
+  --input-bg: #1a1a2e;
+  --shadow-color: rgba(0, 0, 0, 0.3);
+  --message-own-bg: #53d8d4;
+  --message-other-bg: #1a1a2e;
+}
+
+[data-theme="dark"] body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .chat-container,
+[data-theme="dark"] .chat-sidebar,
+[data-theme="dark"] .settings-container,
+[data-theme="dark"] .settings-menu,
+[data-theme="dark"] .auth-card,
+[data-theme="dark"] .profile-card,
+[data-theme="dark"] .password-section,
+[data-theme="dark"] .appearance-container,
+[data-theme="dark"] .language-container,
+[data-theme="dark"] .friends-manager,
+[data-theme="dark"] .messages-container,
+[data-theme="dark"] .chat-header,
+[data-theme="dark"] .message-input-area,
+[data-theme="dark"] .user-profile {
+  background-color: var(--bg-primary) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-color) !important;
+}
+
+[data-theme="dark"] .chat-sidebar,
+[data-theme="dark"] .settings-menu,
+[data-theme="dark"] .sidebar-header {
+  background-color: var(--bg-tertiary) !important;
+}
+
+[data-theme="dark"] .chat-item {
+  border-color: var(--border-color) !important;
+}
+
+[data-theme="dark"] .chat-item:hover,
+[data-theme="dark"] .friend-item:hover {
+  background-color: var(--hover-bg) !important;
+}
+
+[data-theme="dark"] .chat-item.active {
+  background-color: var(--accent-color) !important;
+}
+
+[data-theme="dark"] .message.own .message-content {
+  background-color: var(--message-own-bg) !important;
+}
+
+[data-theme="dark"] .message:not(.own) .message-content {
+  background-color: var(--message-other-bg) !important;
+}
+
+[data-theme="dark"] .message-input {
+  background-color: var(--input-bg) !important;
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] h1, [data-theme="dark"] h2, [data-theme="dark"] h3,
+[data-theme="dark"] .chat-name,
+[data-theme="dark"] .profile-name,
+[data-theme="dark"] .friend-username,
+[data-theme="dark"] .username,
+[data-theme="dark"] .field-label,
+[data-theme="dark"] .section-title,
+[data-theme="dark"] .auth-header h1 {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] p, [data-theme="dark"] span,
+[data-theme="dark"] .field-value,
+[data-theme="dark"] .profile-status,
+[data-theme="dark"] .member-count,
+[data-theme="dark"] .message-sender,
+[data-theme="dark"] .message-time,
+[data-theme="dark"] .auth-header p {
+  color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .nav-tab {
+  background: transparent !important;
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .nav-tab.active {
+  background: var(--accent-color) !important;
+  color: #fff !important;
+}
+
+[data-theme="dark"] input, [data-theme="dark"] select, [data-theme="dark"] textarea {
+  background-color: var(--input-bg) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-color) !important;
+}
+
+[data-theme="dark"] .auth-button,
+[data-theme="dark"] .add-friend-btn {
+  background-color: var(--accent-color) !important;
+}
+
+[data-theme="dark"] .auth-card {
+  background-color: var(--card-bg) !important;
+  box-shadow: 0 8px 20px var(--shadow-color) !important;
+}
+
+* {
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}

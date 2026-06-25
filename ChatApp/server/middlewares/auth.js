@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
+const logger = require('../lib/logger');
 
 const validateUID = async (req ,res , next) =>{
     try{
@@ -14,7 +15,7 @@ const validateUID = async (req ,res , next) =>{
         }
         next();
     }catch(err){
-        console.error(err);
+        logger.error(err, 'validateUID error');
         return res.status(500).json({ message: 'Internal server error' });
     }
 }

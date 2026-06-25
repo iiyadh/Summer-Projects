@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const logger = require('../lib/logger');
 
 const createAccessToken = (userId) => {
     return jwt.sign({ userId }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1d' });
@@ -12,6 +13,10 @@ const createRefreshToken = (userId) => {
 
 const register = async (req,res) =>{
     const { username, email ,password } = req.body;
+
+    if (!password || password.length < 6) {
+        return res.status(400).json({ message: 'Password must be at least 6 characters' });
+    }
 
     try{
         const existingUser = await User.findOne({email});
@@ -37,7 +42,7 @@ const register = async (req,res) =>{
         
         res.status(201).send({ message : 'User registered' , token: accessToken });
     }catch(err){
-        console.error(err);
+        logger.error(err, 'Register error');
         res.status(500).json({ message: 'Internal server error' });
     }
 }
@@ -63,7 +68,7 @@ const login = async (req,res) => {
         });
         res.status(200).send({ message : 'User logged in' , token: accessToken });
     }catch(err){
-        console.error(err);
+        logger.error(err, 'Login error');
         res.status(500).json({ message: 'Internal server error' });
     }
 }

@@ -42,6 +42,12 @@ const messageSchema = new mongoose.Schema({
 })
 
 
+chatSchema.index({ participants: 1 });
+chatSchema.index({ createdAt: -1 });
+
+messageSchema.index({ sender: 1 });
+messageSchema.index({ timestamp: -1 });
+
 module.exports = {
     Chat: mongoose.model('Chat', chatSchema),
     Message: mongoose.model('Message', messageSchema)

@@ -1,6 +1,7 @@
 const crypto = require('crypto');
 const bcrypt = require('bcrypt');
 const User = require('../models/User');
+const logger = require('../lib/logger');
 const { sendEmail } = require('../lib/emailSender');
 
 
@@ -91,7 +92,7 @@ const forgotPassword = async (req,res) =>{
         await sendEmail(mailOptions);
         res.status(200).json({ message: 'Password reset link sent to your email' });
     }catch(err){
-        console.error(err);
+        logger.error(err, 'forgotPassword error');
         return res.status(500).json({ message: 'Internal server error' });
     }
 }
@@ -100,6 +101,9 @@ const forgotPassword = async (req,res) =>{
 const resetPassword = async (req,res) =>{
     const token = req.params.token;
     const { newPassword } = req.body;
+    if (!newPassword || newPassword.length < 6) {
+        return res.status(400).json({ message: 'Password must be at least 6 characters' });
+    }
     try {
         const user = await User.findOne({
             resetToken: token,
@@ -115,7 +119,7 @@ const resetPassword = async (req,res) =>{
         await user.save();
         res.status(200).json({ message: 'Password has been reset successfully' });
     }catch(err){
-        console.error(err);
+        logger.error(err, 'resetPassword error');
         return res.status(500).json({ message: 'Internal server error' });
     }
 }

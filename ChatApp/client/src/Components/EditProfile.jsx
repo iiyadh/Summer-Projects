@@ -7,7 +7,7 @@ import EditPassword from './PopupContent/EditPassword';
 import { Button, Modal, Popconfirm, Upload, Avatar } from 'antd';
 import { EyeInvisibleOutlined, EyeOutlined, UserOutlined, CameraOutlined } from '@ant-design/icons';
 import ImgCrop from "antd-img-crop";
-import { uploadToCloudinary } from '../lib/cloudinary';
+import api from '../api/api';
 import { useUserStore } from '../store/userStore';
 import toast from 'react-hot-toast';
 
@@ -76,12 +76,14 @@ const EditProfile = () => {
         }
     };
 
-    // Custom request to handle upload without actual server call
     const customRequest = async ({ file, onSuccess }) => {
         try{
-            const data = await uploadToCloudinary(file);
-            await updateProfilePicture(data.url);
-            setUserInfo(prev => ({ ...prev, profilePicture: data.url }));
+            const formData = new FormData();
+            formData.append('profilePicture', file);
+            const res = await api.put('/user/profile/change-profile-picture', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
+            setUserInfo(prev => ({ ...prev, profilePicture: res.data.profilePicture }));
             onSuccess("ok");
         }catch(err){
             console.error('Upload failed:', err);

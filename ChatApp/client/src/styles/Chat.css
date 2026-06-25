@@ -146,6 +146,19 @@
   color: #333333;
 }
 
+.chat-status-text {
+  font-size: 11px;
+  margin-top: 2px;
+}
+
+.chat-status-text.online {
+  color: #52c41a;
+}
+
+.chat-status-text.offline {
+  color: #999;
+}
+
 .chat-meta {
   display: flex;
   flex-direction: column;
@@ -198,7 +211,14 @@
 
 .profile-status {
   font-size: 12px;
-  color: #03a6a1;
+}
+
+.profile-status.online {
+  color: #52c41a;
+}
+
+.profile-status.offline {
+  color: #999;
 }
 
 .profile-settings {

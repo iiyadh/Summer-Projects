@@ -4,7 +4,22 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    
+    <script>
+      (function() {
+        try {
+          var saved = localStorage.getItem('chatapp-appearance');
+          if (saved) {
+            var settings = JSON.parse(saved);
+            if (settings.theme === 'dark') {
+              document.documentElement.setAttribute('data-theme', 'dark');
+            }
+            if (settings.fontSize) {
+              document.documentElement.style.fontSize = settings.fontSize + 'px';
+            }
+          }
+        } catch(e) {}
+      })();
+    </script>
     <title>ChatApp - Connect Instantly</title>
   </head>
   <body>

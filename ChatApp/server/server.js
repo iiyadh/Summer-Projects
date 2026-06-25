@@ -10,15 +10,16 @@ const WebSocket = require('ws');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 const mongoose = require('mongoose');
+const logger = require('./lib/logger');
 const { notFound, errorHandler } = require('./middlewares/errorHandler');
 
 mongoose
     .connect(process.env.DB_URL)
     .then(() => {
-        console.log('Connected to MongoDB');
+        logger.info('Connected to MongoDB');
     })
     .catch((err) => {
-        console.error('Failed to connect to MongoDB:', err);
+        logger.error(err, 'Failed to connect to MongoDB');
         process.exit(1);
     });
 
@@ -63,6 +64,8 @@ app.use(express.urlencoded({ extended: false, limit: '1mb' }));
 app.use(cookieParser());
 
 
+app.use('/uploads', express.static('uploads'));
+
 app.use('/api/auth', require('./routes/authRoute'));
 app.use('/api/recovery', require('./routes/passwordRoute'));
 app.use('/api/user', require('./routes/userRoute'));
@@ -74,7 +77,7 @@ app.use(errorHandler);
 
 // WebSocket connection handler
 wss.on('connection', (ws, req) => {
-    console.log('New WebSocket connection attempt');
+    logger.info('New WebSocket connection attempt');
     
     let userId = null;
 
@@ -93,7 +96,7 @@ wss.on('connection', (ws, req) => {
                     // Store the connection
                     clients.set(userId, ws);
                     
-                    console.log(`User ${userId} authenticated via WebSocket`);
+                    logger.info({ userId }, 'User authenticated via WebSocket');
                     
                     // Send confirmation
                     ws.send(JSON.stringify({
@@ -167,7 +170,7 @@ wss.on('connection', (ws, req) => {
             }
 
         } catch (err) {
-            console.error('Error processing message:', err);
+            logger.error(err, 'Error processing WebSocket message');
             ws.send(JSON.stringify({
                 type: 'error',
                 message: 'Invalid message format'
@@ -178,13 +181,13 @@ wss.on('connection', (ws, req) => {
     ws.on('close', () => {
         if (userId) {
             clients.delete(userId);
-            console.log(`User ${userId} disconnected`);
+            logger.info({ userId }, 'User disconnected');
             broadcastUserStatus(userId, 'offline');
         }
     });
 
     ws.on('error', (error) => {
-        console.error('WebSocket error:', error);
+        logger.error(error, 'WebSocket error');
     });
 });
 
@@ -205,5 +208,5 @@ function broadcastUserStatus(userId, status) {
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-    console.log('Server is running on port ' + PORT);
+    logger.info({ port: PORT }, 'Server is running');
 });

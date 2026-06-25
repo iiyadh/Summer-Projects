@@ -5,6 +5,7 @@ import { SettingFilled , UserOutlined } from '@ant-design/icons';
 import { useUserStore } from '../store/userStore';
 import { Avatar, Spin } from 'antd';
 import { useEffect } from 'react';
+import websocketService from '../services/websocket';
 
 const ChatSideBar = ({chats , activeChatId , setActiveChatId, loading}) =>{
     const [width, setWidth] = useState(500);
@@ -12,6 +13,7 @@ const ChatSideBar = ({chats , activeChatId , setActiveChatId, loading}) =>{
     const isResizing = useRef(false);
     const navigate = useNavigate();
     const [userInfo, setUserInfo] = useState({});
+    const [onlineUsers, setOnlineUsers] = useState(new Set());
     const { getUserProfile } = useUserStore();
 
     const handleMouseDown = () =>{
@@ -55,6 +57,22 @@ const ChatSideBar = ({chats , activeChatId , setActiveChatId, loading}) =>{
         fetchUserProfile();
     },[]);
 
+    useEffect(() => {
+        const handleUserStatus = (data) => {
+            setOnlineUsers(prev => {
+                const next = new Set(prev);
+                if (data.status === 'online') {
+                    next.add(data.userId);
+                } else {
+                    next.delete(data.userId);
+                }
+                return next;
+            });
+        };
+        websocketService.on('user_status', handleUserStatus);
+        return () => websocketService.off('user_status', handleUserStatus);
+    }, []);
+
     return (
     <div
         ref={sidebarRef}
@@ -86,6 +104,11 @@ const ChatSideBar = ({chats , activeChatId , setActiveChatId, loading}) =>{
                         <div className="chat-avatar">{chat.avatar}</div>
                         <div className="chat-info">
                             <div className="chat-name">{chat.name}</div>
+                            {chat.participants && chat.participants.length === 2 && (
+                                <div className={`chat-status-text ${onlineUsers.has(chat.participants.find(p => p._id !== userInfo._id)?._id || chat.participants.find(p => p !== userInfo._id)) ? 'online' : 'offline'}`}>
+                                    {onlineUsers.has(chat.participants.find(p => p._id !== userInfo._id)?._id || chat.participants.find(p => p !== userInfo._id)) ? 'Online' : 'Offline'}
+                                </div>
+                            )}
                         </div>
                         <div className="chat-meta">{chat.unread > 0 && <div className="unread-badge">{chat.unread}</div>}</div>
                     </div>
@@ -103,7 +126,7 @@ const ChatSideBar = ({chats , activeChatId , setActiveChatId, loading}) =>{
             />
             <div className="profile-info">
                 <div className="profile-name">{ userInfo.username }</div>
-                <div className="profile-status">Online</div>
+                <div className={`profile-status ${onlineUsers.has(userInfo._id) ? 'online' : 'offline'}`}>{onlineUsers.has(userInfo._id) ? 'Online' : 'Offline'}</div>
             </div>
             <div className="profile-settings">
                 <SettingFilled className="settings-icon" onClick={() => navigate('/settings')} />

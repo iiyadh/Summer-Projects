@@ -1,4 +1,5 @@
 const mailer = require('nodemailer');
+const logger = require('./logger');
 
 const sendEmail = async ({from,to , subject , text, html}) =>{
     try{
@@ -12,7 +13,7 @@ const sendEmail = async ({from,to , subject , text, html}) =>{
 
         await transporter.sendMail({from,to,subject,text,html});
     }catch(err){
-        console.log(err);
+        logger.error(err, 'sendEmail error');
     }
 }
 

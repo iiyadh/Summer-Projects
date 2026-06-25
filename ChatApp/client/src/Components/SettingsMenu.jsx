@@ -29,7 +29,7 @@ const SettingsMenu = () => {
                 </div>
                 <ul>
                     <li><Link to="/settings/profile">Profile</Link></li>
-                    <li><Link to="/settings/apparence">Apparence</Link></li>
+                    <li><Link to="/settings/appearance">Appearance</Link></li>
                     <li><Link to="/settings/language">Language</Link></li>
                 </ul>
             </div>

@@ -56,7 +56,7 @@ const ManageFriends = () => {
         }
     }
 
-    const fetchBlcokedFriends = async () => {
+    const fetchBlockedFriends = async () => {
         try {
             const res = await api.get('/friends/blocked-users');
             setBlockedFriendslist(res.data || []);
@@ -70,7 +70,7 @@ const ManageFriends = () => {
         fetchPendingRequests();
         fetchSentRequests();
         fetchFriends();
-        fetchBlcokedFriends();
+        fetchBlockedFriends();
 
         // Listen for user status updates
         const handleUserStatus = (data) => {

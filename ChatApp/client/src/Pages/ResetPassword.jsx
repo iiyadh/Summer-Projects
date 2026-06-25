@@ -26,14 +26,6 @@ const ResetPassword = () => {
         const formData = values;
         const newPassword = formData.password;
         
-        if(new RegExp(/^.*(?=.{6,})(?=.*[a-zA-Z])(?=.*\d)(?=.*[!&$%&? "]).*$/).test(newPassword) === false) {
-            toast.error("Weak Password", {
-                duration: 2500,
-                removeDelay: 500,
-            });
-            return;
-        }
-
         if(newPassword !== formData.cpassword) {
             toast.error("Passwords do not match", {
                 duration: 2500,
@@ -83,11 +75,11 @@ const ResetPassword = () => {
                             <Input.Password  className='form-input'/>
                         </Form.Item>
                         <Form.Item
-                            label="Confirme Password"
+                            label="Confirm Password"
                             name="cpassword"
                             layout='vertical'
                             className='form-group'
-                            rules={[{ required: true, message: 'Please input your Confirme Passoword!' }]}
+                            rules={[{ required: true, message: 'Please input your Confirm Password!' }]}
                         >
                             <Input.Password  className='form-input'/>
                         </Form.Item>

@@ -1,0 +1,51 @@
+services:
+  mongo:
+    image: mongo:7
+    container_name: chatapp-mongo
+    restart: unless-stopped
+    volumes:
+      - mongo-data:/data/db
+    ports:
+      - "27017:27017"
+
+  server:
+    build:
+      context: ./server
+    container_name: chatapp-server
+    restart: unless-stopped
+    depends_on:
+      - mongo
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - DB_URL=mongodb://mongo:27017/chatapp
+      - FRONTEND_URL=http://localhost:5173
+      - ACCESS_TOKEN_SECRET=${ACCESS_TOKEN_SECRET:-change_me_access_secret}
+      - REFRESH_TOKEN_SECRET=${REFRESH_TOKEN_SECRET:-change_me_refresh_secret}
+      - RATE_LIMIT_MAX=300
+      - EMAIL_USER=${EMAIL_USER:-}
+      - EMAIL_PASS=${EMAIL_PASS:-}
+      - SMTP_USER=${SMTP_USER:-}
+    volumes:
+      - uploads-data:/app/uploads
+    ports:
+      - "3000:3000"
+
+  client:
+    build:
+      context: ./client
+      args:
+        - VITE_BASE_URL=http://localhost:3000/api
+        - VITE_WS_URL=ws://localhost:3000
+        - VITE_CLOUDINARY_UPLOAD_PRESET=${VITE_CLOUDINARY_UPLOAD_PRESET:-}
+        - VITE_CLOUDINARY_CLOUD_NAME=${VITE_CLOUDINARY_CLOUD_NAME:-}
+    container_name: chatapp-client
+    restart: unless-stopped
+    depends_on:
+      - server
+    ports:
+      - "5173:5173"
+
+volumes:
+  mongo-data:
+  uploads-data:

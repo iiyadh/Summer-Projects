@@ -1,5 +1,6 @@
 const { Chat , Message } = require('../models/Chat');
 const User = require('../models/User');
+const logger = require('../lib/logger');
 
 const createChat1_1 = async (req, res) => {
     const userId = req.userId;
@@ -55,15 +56,11 @@ const getChats = async (req, res) => {
 
 const getMessages = async (req, res) => {
     try {
-        const chatRoom = await Chat.findById(req.params.chatId)
-            .populate({
-                path: 'messages',
-                select: 'sender content timestamp',
-                populate: {
-                    path: 'sender',
-                    select: 'username profilePicture'
-                }
-            });
+        const page = Math.max(1, parseInt(req.query.page) || 1);
+        const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 50));
+        const skip = (page - 1) * limit;
+
+        const chatRoom = await Chat.findById(req.params.chatId);
 
         if (!chatRoom) {
             return res.status(404).json({ error: 'Chat not found' });
@@ -73,7 +70,23 @@ const getMessages = async (req, res) => {
             return res.status(403).json({ error: 'Access denied' });
         }
 
-        return res.status(200).json(chatRoom.messages);
+        const totalMessages = chatRoom.messages.length;
+        const messageIds = chatRoom.messages.slice(-skip - limit, totalMessages - skip || undefined);
+
+        const messages = await Message.find({ _id: { $in: messageIds } })
+            .sort({ timestamp: -1 })
+            .select('sender content timestamp')
+            .populate('sender', 'username profilePicture');
+
+        return res.status(200).json({
+            messages: messages.reverse(),
+            pagination: {
+                page,
+                limit,
+                total: totalMessages,
+                hasMore: totalMessages > skip + limit
+            }
+        });
 
     } catch {
         return res.status(500).json({ error: 'Server error' });
@@ -89,6 +102,23 @@ const sendMessage = async (req, res) => {
         }
         if (!chatRoom.participants.includes(req.userId)) {
             return res.status(403).json({ error: 'Access denied' });
+        }
+
+        const sender = await User.findById(req.userId);
+        const blockedByParticipant = chatRoom.participants.some(pid =>
+            pid.toString() !== req.userId && sender.blockedUsers.includes(pid)
+        );
+        if (blockedByParticipant) {
+            return res.status(403).json({ error: 'You have blocked a participant in this chat' });
+        }
+
+        const otherParticipants = chatRoom.participants.filter(pid => pid.toString() !== req.userId);
+        const blockedUsers = await User.find({
+            _id: { $in: otherParticipants },
+            blockedUsers: req.userId
+        });
+        if (blockedUsers.length > 0) {
+            return res.status(403).json({ error: 'You cannot send messages to this chat' });
         }
 
         const newMessage = {
@@ -115,7 +145,7 @@ const sendMessage = async (req, res) => {
             data: lastMessage
         });
     } catch (err) {
-        console.error(err);
+        logger.error(err, 'sendMessage error');
         return res.status(500).json({ error: 'Server error' });
     }
 };
@@ -124,7 +154,7 @@ const editMessage = async (req, res) => {
     try {
         const { messageId } = req.params;
         const { newContent } = req.body;
-        console.log(messageId , newContent);
+        logger.debug({ messageId, newContent }, 'editMessage');
         if (!newContent || !newContent.trim()) {
             return res.status(400).json({ error: 'Message content cannot be empty' });
         }
@@ -144,7 +174,7 @@ const editMessage = async (req, res) => {
         });
 
     } catch (err) {
-        console.error('editMessage error:', err);
+        logger.error(err, 'editMessage error');
         return res.status(500).json({ error: 'Server error' });
     }
 };
@@ -167,7 +197,7 @@ const deleteMessage = async (req, res) => {
         );
         return res.status(200).json({ message: 'Message deleted successfully' });
     } catch (err) {
-        console.error(err);
+        logger.error(err, 'deleteMessage error');
         return res.status(500).json({ error: 'Server error' });
     }
 };

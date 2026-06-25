@@ -18,7 +18,7 @@ import ChatHistory from './Components/ChatHistory.jsx';
 import { Navigate } from 'react-router-dom';
 import Settings from './Pages/Settings.jsx';
 import  EditProfile  from './Components/EditProfile.jsx';
-import Apperance from './Components/Apparence.jsx';
+import Appearance from './Components/Appearance.jsx';
 import Language from './Components/Language.jsx';
 import ManageFriends from './Components/ManageFriends.jsx';
 import RequireAuth from './Protection/RequireAuth.jsx';
@@ -50,7 +50,7 @@ const router = createBrowserRouter([
         children:[
           {index: true, element: <Navigate to="/settings/profile" replace />},
           {path: 'profile', element: <EditProfile />},
-          {path: 'apparence' , element: <Apperance />},
+          {path: 'appearance' , element: <Appearance />},
           {path: 'language' , element: <Language />},
         ]
       }

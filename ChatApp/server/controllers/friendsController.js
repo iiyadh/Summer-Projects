@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const logger = require('../lib/logger');
 
 
 const getUsersNotFriends = async (req, res) => {
@@ -28,7 +29,7 @@ const getUsersNotFriends = async (req, res) => {
 
         res.status(200).json(usersNotFriend);
     } catch (err) {
-        console.error(err);
+        logger.error(err, 'getUsersNotFriends error');
         res.status(500).json({ message: 'Internal server error' });
     }
 };
@@ -58,7 +59,7 @@ const addFriend = async (req, res) => {
         await friendUser.save();
         res.status(200).json({ message: 'Friend request sended successfully' , friendRequest: { _id: friendUser._id, username: friendUser.username, profilePicture: friendUser.profilePicture } });
     } catch (err) {
-        console.error(err);
+        logger.error(err, 'addFriend error');
         res.status(500).json({ message: 'Internal server error' });
     }
 };
@@ -67,7 +68,7 @@ const acceptFriendRequest = async (req, res) => {
     const userId = req.userId;
     const { requestId } = req.body;
 
-    console.log(userId, requestId);
+    logger.debug({ userId, requestId }, 'acceptFriendRequest');
     try {
         const currentUser = await User.findById(userId);
         const requesterUser = await User.findById(requestId);
@@ -85,7 +86,7 @@ const acceptFriendRequest = async (req, res) => {
         await requesterUser.save();
         res.status(200).json({ message: 'Friend request accepted' });
     } catch (err) {
-        console.error(err);
+        logger.error(err, 'acceptFriendRequest error');
         res.status(500).json({ message: 'Internal server error' });
     }
 };
@@ -97,7 +98,7 @@ const rejectFriendRequest = async (req, res) => {
     const { requestId } = req.body;
 
 
-    console.log(userId, requestId);
+    logger.debug({ userId, requestId }, 'rejectFriendRequest');
     try {
         const currentUser = await User.findById(userId);
         const requesterUser = await User.findById(requestId);
@@ -113,7 +114,7 @@ const rejectFriendRequest = async (req, res) => {
         await requesterUser.save();
         res.status(200).json({ message: 'Friend request rejected' });
     } catch (err) {
-        console.error(err);
+        logger.error(err, 'rejectFriendRequest error');
         res.status(500).json({ message: 'Internal server error' });
     }
 };
@@ -136,7 +137,7 @@ const denySentRequest = async (req, res) => {
         await recipientUser.save();
         res.status(200).json({ message: 'Sent friend request denied' });
     } catch (err) {
-        console.error(err);
+        logger.error(err, 'denySentRequest error');
         res.status(500).json({ message: 'Internal server error' });
     }
 };
@@ -151,7 +152,7 @@ const getFriendRequests = async (req, res) => {
         const requesters = await User.find({ _id: { $in: currentUser.friendsRequests } }).select('username profilePicture');
         res.status(200).json(requesters);
     } catch (err) {
-        console.error(err);
+        logger.error(err, 'getFriendRequests error');
         res.status(500).json({ message: 'Internal server error' });
     }
 };
@@ -167,7 +168,7 @@ const getSentsRequests = async (req, res) => {
         const sentRequests = await User.find({ _id: { $in: currentUser.sentRequests } }).select('username profilePicture');
         res.status(200).json(sentRequests);
     } catch (err) {
-        console.error(err);
+        logger.error(err, 'getSentsRequests error');
         res.status(500).json({ message: 'Internal server error' });
     }
 };
@@ -190,7 +191,7 @@ const getFriends = async (req, res) => {
     }).select('username profilePicture');
     res.status(200).json(friendsData);
   } catch (err) {
-    console.error(err);
+    logger.error(err, 'getFriends error');
     res.status(500).json({ message: 'Internal server error' });
   }
 };
@@ -213,7 +214,7 @@ const removeFriend = async (req, res) => {
         await friendUser.save();
         res.status(200).json({ message: 'Friend removed successfully' });
     } catch (err) {
-        console.error(err);
+        logger.error(err, 'removeFriend error');
         res.status(500).json({ message: 'Internal server error' });
     }
 };
@@ -238,7 +239,7 @@ const blockFriend = async (req, res) => {
         await currentUser.save();
         res.status(200).json({ message: 'Friend blocked successfully' });
     } catch (err) {
-        console.error(err);
+        logger.error(err, 'blockFriend error');
         res.status(500).json({ message: 'Internal server error' });
     }
 };
@@ -257,7 +258,7 @@ const unblockFriend = async (req, res) => {
         await currentUser.save();
         res.status(200).json({ message: 'Friend unblocked successfully' });
     } catch (err) {
-        console.error(err);
+        logger.error(err, 'unblockFriend error');
         res.status(500).json({ message: 'Internal server error' });
     }
 };
@@ -275,7 +276,7 @@ const getBlockedUsers = async (req, res) => {
         }).select('username profilePicture');
         res.status(200).json(blockedUsersData);
     } catch (err) {
-        console.error(err);
+        logger.error(err, 'getBlockedUsers error');
         res.status(500).json({ message: 'Internal server error' });
     }
 };
